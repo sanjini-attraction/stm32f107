@@ -3,6 +3,7 @@
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_usart.h"
 #include "stm32f10x_tim.h"
+#include "stm32f10x_exti.h"
 #include "misc.h"
 #include "lcd.h"
 #include "touch.h"
@@ -49,7 +50,7 @@ void TouchSensor_Configure(){
 void TIM2_Configure() {
   // 1Hz = 72MHz / TIM_Prescaler / TIM_Period = 72MHz / 10k / 7200
   TIM_TimeBaseInitTypeDef timer = {
-    .TIM_Prescaler = (uint16_t) (SystemCoreClock / 10000)-1;,
+    .TIM_Prescaler = (uint16_t) (SystemCoreClock / 10000)-1,
     .TIM_Period = 10000-1,
     .TIM_CounterMode = TIM_CounterMode_Up,
     .TIM_ClockDivision = 0,
