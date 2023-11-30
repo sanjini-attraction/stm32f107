@@ -31,6 +31,9 @@
 */
 #define PLAYER_MAX 10
 int values[PLAYER_MAX] = {};
+int sec_count = 0;
+int game_index = 0, player_count;
+int game_state = 0;  // 1(playing), 0(ready)
 
 void RCC_Configure() {
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
@@ -42,6 +45,29 @@ void TouchSensor_Configure(){
   touch1.GPIO_Pin = GPIO_Pin_4;
   touch1.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_Init(GPIOB, &touch1);
+}
+void TIM2_Configure() {
+  // 1Hz = 72MHz / TIM_Prescaler / TIM_Period = 72MHz / 10k / 7200
+  TIM_TimeBaseInitTypeDef timer = {
+    .TIM_Prescaler = (uint16_t) (SystemCoreClock / 10000)-1;,
+    .TIM_Period = 10000-1,
+    .TIM_CounterMode = TIM_CounterMode_Up,
+    .TIM_ClockDivision = 0,
+  };
+
+  TIM_TimeBaseInit(TIM2, &timer);
+  TIM_ARRPreloadConfig(TIM2, ENABLE);
+  
+  TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+}
+void TIM2_IRQHandler() {
+  // 시간 맞추기 게임용
+  if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
+      // if (GPIO_ReadOutputDataBit(GPIOD, GPIO_Pin_2))
+      //   GPIO_ResetBits(GPIOD, GPIO_Pin_2);
+      // else GPIO_SetBits(GPIOD, GPIO_Pin_2);         
+  }
+  TIM_ClearITPendingBit(TIM2, TIM_IT_Update); 
 }
 
 void EXTI_Configure(){
@@ -68,9 +94,17 @@ void NVIC_Configure(){
 }
 
 void EXTI4_IRQHandler() {
+  // 시간 맞추기 게임용
   if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
     if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == Bit_RESET) {
-      // Todo
+      if(game_state == 0){
+        sec_count = 0;
+        TIM_Cmd(TIM2, ENABLE);
+      }
+      else{
+        TIM_Cmd(TIM2, DISABLE);
+      }
+      game_state = !game_state;
     }
     EXTI_ClearITPendingBit(EXTI_Line4);
   }
