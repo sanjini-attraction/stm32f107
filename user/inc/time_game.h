@@ -29,4 +29,4 @@ void timeGame_TouchHandler();
 
 
 /* -----------    Game Control   ----------- */
-void timeGame_TurnEnd();
+void timeGame_turnEnd();

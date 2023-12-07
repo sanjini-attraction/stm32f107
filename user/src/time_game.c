@@ -10,13 +10,14 @@ int time_count = 0;
 
 /* -----------     Configure     ----------- */
 void touch_exti_Configure(){
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource4);
     EXTI_InitTypeDef touch = {
         .EXTI_Line = EXTI_Line4,
         .EXTI_Mode = EXTI_Mode_Interrupt,
         .EXTI_Trigger = EXTI_Trigger_Falling,
         .EXTI_LineCmd = ENABLE
     };
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource4);
+    
     EXTI_Init(&touch);
 }
 void touch_gpio_Configure(){
@@ -24,9 +25,10 @@ void touch_gpio_Configure(){
         .GPIO_Pin = GPIO_Pin_4,
         .GPIO_Mode = GPIO_Mode_IPU
     };
-    GPIO_Init(GPIOB, &touch);
+    GPIO_Init(GPIOC, &touch);
 }
 void touch_nvic_Configure(){
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     NVIC_InitTypeDef touch = {
         .NVIC_IRQChannel = EXTI4_IRQn,
         .NVIC_IRQChannelPreemptionPriority = 0x0,
@@ -45,12 +47,26 @@ void timer_Configure(){
     };
     TIM_TimeBaseInit(TIM2, &timer2);
     TIM_ARRPreloadConfig(TIM2, ENABLE);
-
-    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
 }
+void timer_interrupt_Configure(){
+    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+    TIM_Cmd(TIM2, ENABLE);
+}
+void timer_nvic_Configure(){
+    NVIC_InitTypeDef timer2 = {
+        .NVIC_IRQChannel = TIM2_IRQn;
+        .NVIC_IRQChannelPreemptionPriority = 0x0; 
+        .NVIC_IRQChannelSubPriority = 0x0; 
+        .NVIC_IRQChannelCmd = ENABLE;
+    };
+    NVIC_Init(&timer2);
+}
+
 void timeGame_Configure(){
     // RCC Configure
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE); // KEY1(PC4)
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
     // Touch Sensor Configure
     touch_gpio_Configure();
@@ -59,13 +75,16 @@ void timeGame_Configure(){
 
     // Timer2 Configure
     timer_Configure();
+    timer_interrupt_Configure();
+    timer_nvic_Configure();
 }
 
 
 /* ----------- Interrupt Handler ----------- */
 void timeGame_TimerHandler(){
     if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
-        time_count++;
+        printf("timer interrupt\n");
+        if(game_state == 1) time_count++;
         // if (GPIO_ReadOutputDataBit(GPIOD, GPIO_Pin_2))
         //   GPIO_ResetBits(GPIOD, GPIO_Pin_2);
         // else GPIO_SetBits(GPIOD, GPIO_Pin_2);         
@@ -91,7 +110,7 @@ void timeGame_TouchHandler(){
 } 
 
 /* -----------    Game Control   ----------- */
-void timeGame_TurnEnd(){
+void timeGame_turnEnd(){
     // 모든 플레이어의 턴 종료(게임 종료)
     if(cur_player+1 == player_count){
         allTurnEnd = 1;

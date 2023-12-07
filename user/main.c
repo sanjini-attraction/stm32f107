@@ -45,13 +45,12 @@ char allTurnEnd = 0;    // 모든 플레이어가 턴을 종료했는지 확인
 void TIM2_IRQHandler(){
 	timeGame_TimerHandler();
 }
-void EXTI4_IRQHandler(){
+void EXTI4_IRQHandler(void){
 	timeGame_TouchHandler();
 }
 
 void Init(){
-  SystemInit();
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+	SystemInit();
 
 	timeGame_Configure();
 }
