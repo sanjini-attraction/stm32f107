@@ -6,6 +6,7 @@
 #include "time_game.h"
 #include "main.h"
 
+int time_count = 0;
 
 /* -----------     Configure     ----------- */
 void touch_exti_Configure(){

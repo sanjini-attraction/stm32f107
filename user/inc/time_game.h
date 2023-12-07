@@ -18,7 +18,6 @@
 */
 
 /* -----------      Define       ----------- */
-int time_count = 0;
 
 /* -----------     Configure     ----------- */
 void timeGame_Configure();
@@ -30,3 +29,4 @@ void timeGame_TouchHandler();
 
 
 /* -----------    Game Control   ----------- */
+void timeGame_TurnEnd();
