@@ -9,7 +9,8 @@
 #include "touch.h"
 
 #include "time_game.h"
-#include "main.h"
+#include "some_game.h"
+#include "common.h"
 
 int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
 
@@ -45,14 +46,22 @@ char allTurnEnd = 0;    // 모든 플레이어가 턴을 종료했는지 확인
 void TIM2_IRQHandler(){
 	timeGame_TimerHandler();
 }
-void EXTI4_IRQHandler(void){
-	timeGame_TouchHandler();
+void EXTI4_IRQHandler(){
+	turnButton_Handler();
 }
+// void EXTI?_IRQHandler(){
+// 	timeGame_TouchHandler();
+// }
+
 
 void Init(){
 	SystemInit();
+	turnEnd_Button_Configure();
 
 	timeGame_Configure();
+	
+	// 해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정
+	someGame_Configure();
 }
 
 int main(){

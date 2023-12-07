@@ -17,8 +17,6 @@
             - 턴 종료 시 counter 값을 저장
 */
 
-/* -----------      Define       ----------- */
-
 /* -----------     Configure     ----------- */
 void timeGame_Configure();
 

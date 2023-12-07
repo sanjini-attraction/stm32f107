@@ -4,7 +4,7 @@
 #include "stm32f10x_rcc.h"
 
 #include "time_game.h"
-#include "main.h"
+#include "common.h"
 
 int time_count = 0;
 
