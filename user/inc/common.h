@@ -1,4 +1,4 @@
-#define PLAYER_MAX 10
+#define PLAYER_MAX 100
 
 extern int values[PLAYER_MAX]; // 각 플레이어의 데이터 저장
 
