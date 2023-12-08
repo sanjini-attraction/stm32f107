@@ -11,6 +11,7 @@
 #include "time_game.h"
 #include "some_game.h"
 #include "common.h"
+#include "game_io.h"
 
 int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
 
@@ -52,7 +53,13 @@ void EXTI4_IRQHandler(){
 // void EXTI?_IRQHandler(){
 // 	timeGame_TouchHandler();
 // }
+void USART1_IRQHandler() {
+    io_USART1_IRQHandler();
+}
 
+void USART2_IRQHandler() {
+    io_USART2_IRQHandler();
+}
 
 void Init(){
 	SystemInit();
@@ -62,6 +69,7 @@ void Init(){
 	
 	// 해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정
 	someGame_Configure();
+    io_Configure();
 }
 
 int main(){
