@@ -76,7 +76,6 @@ void io_USART2_Init(void)
     USART2_InitStructure.USART_StopBits = USART_StopBits_1;
     USART2_InitStructure.USART_Parity = USART_Parity_No;
     USART2_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    // USART2_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_RTS_CTS;
     USART2_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_Init(USART2, &USART2_InitStructure);
 
@@ -91,77 +90,47 @@ void io_NVIC_Configure(void) {
 
     NVIC_EnableIRQ(USART1_IRQn);
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x1; // TODO
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x1; // TODO
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
     // USART2
     NVIC_EnableIRQ(USART2_IRQn);
     NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x1; // TODO
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x1; // TODO
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 }
 
-void io_USART1_IRQHandler() {
-    // 컴퓨터로부터 받고 블루투스한테 보냄
-    // uint16_t io_arr[] = {1,2,30,100,0};
-    // uint16_t word;
-
-    // for(int i=0; i<5; i++){
-    //     USART_SendData(USART2, io_arr[i]);
-    // }
-    // if(USART_GetITStatus(USART1,USART_IT_RXNE)==RESET){
-    //     // the most recent received data by the USART1 peripheral
-    //     word = USART_ReceiveData(USART1);
-
-    //     USART_SendData(USART2, word);
-
-    //     // clear 'Read data register not empty' flag
-    // 	USART_ClearITPendingBit(USART1,USART_IT_RXNE);
-    // }
-    // USART1.TXDATAL = 'c';
-}
 uint16_t io_char[100];
 
-int io_index = 0;
 void sendMessage() {
+    // 게임 종료 후 결과를 핸드폰으로 전송함
     uint16_t io_arr[100] = {19, 30, 90, 10, 12};
+    for(int i=0; i<5; i++){
+        USART_SendData(USART2, io_arr[i]);
+        for(int i=0; i<2000000; i++); // delay
+    }
 
-        for(int i=0; i<5; i++){
-            USART_SendData(USART2, io_arr[i]);
-            // while((USART2->SR & USART_SR_TC) == 0);
-            for(int i=0; i<2000000; i++);
-        }
-        
-        USART_SendData(USART2, 1000);
-        for(int i=0; i<2000000; i++);
+    USART_SendData(USART2, 1000);
+    USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 }
 void io_USART2_IRQHandler() {
     // 블루투스로부터 데이터 받고 컴퓨터한테 보냄
-    //printf("in io_USART2_IRQHandler\n");
     uint16_t word;
     if(USART_GetITStatus(USART2,USART_IT_RXNE)!=RESET){
         word = USART_ReceiveData(USART2);
 
-        //printf("getMessage: %d %d\n", io_index, word);
+        // char 형태로 배열에 저장함
         io_char[io_index] = word;
         io_index++;
 
         USART_SendData(USART1, word);
         USART_ClearITPendingBit(USART2,USART_IT_RXNE);
-        // sendMessage();
     }
-   // int mindex = 0;
-     printf("get = %c\n", word);
-    // printf("get = %d\n", word);
-    // printf(word);
-    // for (mindex = 0; mindex < 100; mindex++){
-    //     printf("messa: %c ", io_char[io_index-1]);
-    // }
-    // printf("\n");
+    // todo: char to int 변환 필요
 }
 
 void io_Configure() {
