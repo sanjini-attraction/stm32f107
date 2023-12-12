@@ -10,45 +10,12 @@
 #include "common.c"
 #include "punch_game.h"
 
-#define MEM_OFFSET(x, y) (volatile unsigned int *) (x + y);
-
 // volatile unsigned 32bits
 volatile uint32_t ADC_Value;
 int max_mappedValue = 0;
 cur_player = 0;
 
 /* -----------     Configure     ----------- */
-unsigned int BASE_RCC = 0x40021000;
-unsigned int BASE_PORT_C = 0x40011000;
-unsigned int OFFSET_APB2_CLOCK = 0x00000018;
-unsigned int OFFSET_PORT_CONF_LOW = 0x00;
-unsigned int OFFSET_PORT_CONF_HIGH = 0x04;
-unsigned int OFFSET_INPUT_DATA = 0x08;
-unsigned int OFFSET_BIT_SET_RESET = 0x10;
-
-void enable_ports() {
-  volatile unsigned int *REG_APB2_CLOCK = MEM_OFFSET(BASE_RCC, OFFSET_APB2_CLOCK);
-  *REG_APB2_CLOCK = 0x3C;
-}
-
-void set_input_output() {
-  volatile unsigned int *REG_PORT_C_LOW = MEM_OFFSET(BASE_PORT_C, OFFSET_PORT_CONF_LOW);
-  volatile unsigned int *REG_PORT_C_HIGH = MEM_OFFSET(BASE_PORT_C, OFFSET_PORT_CONF_HIGH);
-  
-  *REG_PORT_C_LOW = 0x44448444;
-  *REG_PORT_C_HIGH = 0x44844444;
-}
-
-int is_button_pushed(int btn) {
-  volatile unsigned int *PORT_C_INPUT = MEM_OFFSET(BASE_PORT_C, OFFSET_INPUT_DATA);
-  
-  if (btn == 1) {
-    volatile unsigned int input = *PORT_C_INPUT;
-    return (input & 0x10) != 0x10;
-  }
-  return 0;
-}
-
 void RccInit(void) {
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
@@ -143,18 +110,11 @@ void punchGame(){
     int punch_pressure = 0;
     game_state = 0;
     while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
-    // 인터럽트로 punchGame_turnHandler 호출
-      // if (EXTI_GetITStatus(EXTI_Line4) != RESET){ // 대기 상태 확인
-        // if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == Bit_RESET){ // 눌러진 상태 확인
-          // turnButton_Handler();
-            while (game_state == 1){
-              punch_pressure = ADC_Value;
-              punch_pressure = punch_pressure > 400 ? 400 : (punch_pressure < 100) ? 100 : punch_pressure;
-              int mappedValue = mapping(punch_pressure, 100, 400, 1, 100);
-              if (mappedValue > max_mappedValue) max_mappedValue = mappedValue;
-            }
-          }
-        // EXTI_ClearITPendingBit(EXTI_Line4);
-    //   }
-    // }
+      while (game_state == 1){
+        punch_pressure = ADC_Value;
+        punch_pressure = punch_pressure > 400 ? 400 : (punch_pressure < 100) ? 100 : punch_pressure;
+        int mappedValue = mapping(punch_pressure, 100, 400, 1, 100);
+        if (mappedValue > max_mappedValue) max_mappedValue = mappedValue;
+      }
+   }
 }
