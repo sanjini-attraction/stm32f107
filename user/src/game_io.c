@@ -3,6 +3,7 @@
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_usart.h"
 #include "stm32f10x_rcc.h"
+#include "misc.h"
 
 #include "game_io.h"
 
@@ -75,6 +76,7 @@ void io_USART2_Init(void)
     USART2_InitStructure.USART_StopBits = USART_StopBits_1;
     USART2_InitStructure.USART_Parity = USART_Parity_No;
     USART2_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    // USART2_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_RTS_CTS;
     USART2_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_Init(USART2, &USART2_InitStructure);
 
@@ -105,40 +107,63 @@ void io_NVIC_Configure(void) {
 
 void io_USART1_IRQHandler() {
     // 컴퓨터로부터 받고 블루투스한테 보냄
-    int io_arr[] = {1,2,30,100,0};
-    uint16_t word;
-    if(USART_GetITStatus(USART1,USART_IT_RXNE)!=RESET){
-        word = USART_ReceiveData(USART1);
-        USART_SendData(USART2, word);
-        printf("sendMessage: %d\n", word);
+    // uint16_t io_arr[] = {1,2,30,100,0};
+    // uint16_t word;
 
-        for (int i=0; i<5; i++){
-            printf("%d %d\n", i, io_arr[i]);
-            USART_SendData(USART2, io_arr[i]);
-        }
+    // for(int i=0; i<5; i++){
+    //     USART_SendData(USART2, io_arr[i]);
+    // }
+    // if(USART_GetITStatus(USART1,USART_IT_RXNE)==RESET){
+    //     // the most recent received data by the USART1 peripheral
+    //     word = USART_ReceiveData(USART1);
 
-        USART_ClearITPendingBit(USART1,USART_IT_RXNE);
-    }
+    //     USART_SendData(USART2, word);
+
+    //     // clear 'Read data register not empty' flag
+    // 	USART_ClearITPendingBit(USART1,USART_IT_RXNE);
+    // }
+    // USART1.TXDATAL = 'c';
 }
-char io_char[100];
+uint16_t io_char[100];
+
 int io_index = 0;
+void sendMessage() {
+    uint16_t io_arr[100] = {19, 30, 90, 10, 12};
+
+        for(int i=0; i<5; i++){
+            USART_SendData(USART2, io_arr[i]);
+            // while((USART2->SR & USART_SR_TC) == 0);
+            for(int i=0; i<2000000; i++);
+        }
+        
+        USART_SendData(USART2, 1000);
+        for(int i=0; i<2000000; i++);
+}
 void io_USART2_IRQHandler() {
     // 블루투스로부터 데이터 받고 컴퓨터한테 보냄
-    printf("in io_USART2_IRQHandler");
+    //printf("in io_USART2_IRQHandler\n");
     uint16_t word;
     if(USART_GetITStatus(USART2,USART_IT_RXNE)!=RESET){
         word = USART_ReceiveData(USART2);
 
-        printf("in io_USART2_IRQHandler if");
-        printf("getMessage: %d %d\n", io_index, word);
+        //printf("getMessage: %d %d\n", io_index, word);
         io_char[io_index] = word;
         io_index++;
 
         USART_SendData(USART1, word);
         USART_ClearITPendingBit(USART2,USART_IT_RXNE);
+        // sendMessage();
     }
-
+   // int mindex = 0;
+     printf("get = %c\n", word);
+    // printf("get = %d\n", word);
+    // printf(word);
+    // for (mindex = 0; mindex < 100; mindex++){
+    //     printf("messa: %c ", io_char[io_index-1]);
+    // }
+    // printf("\n");
 }
+
 void io_Configure() {
     io_rcc_Configure();
     io_gpio_Configure();

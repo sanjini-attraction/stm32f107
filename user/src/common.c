@@ -5,6 +5,9 @@
 
 #include "common.h"
 
+int cur_game;       // 현재 게임의 index
+
+
 void turnButton_gpio_Configure(){
      GPIO_InitTypeDef button = {
         .GPIO_Pin = GPIO_Pin_4,

@@ -53,10 +53,18 @@ void EXTI4_IRQHandler(){
 // void EXTI?_IRQHandler(){
 // 	timeGame_TouchHandler();
 // }
-void USART1_IRQHandler() {
-    io_USART1_IRQHandler();
-}
+uint16_t io_arr[100] = {19, 30, 90, 10, 12};
 
+void USART1_IRQHandler(){
+   for(int i=0; i<5; i++){
+        USART_SendData(USART2, io_arr[i]);
+        // while((USART2->SR & USART_SR_TC) == 0);
+        for(int i=0; i<2000000; i++);
+    }
+        
+        USART_SendData(USART2, 1000);
+    USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+}
 void USART2_IRQHandler() {
     io_USART2_IRQHandler();
 }
@@ -69,14 +77,17 @@ void Init(){
 	
 	// 해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정
 	someGame_Configure();
-    io_Configure();
+  io_Configure();
 }
 
 int main(){
   Init();
 
   while(1){
+    someGame();
     if(allTurnEnd){
+        
+
       // send_values();
 
       allTurnEnd = 0;

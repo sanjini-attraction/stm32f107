@@ -48,6 +48,7 @@ void someGame(){
     // 게임 시작
     // 플레이어 수 초기화
     cur_player = 0;
+    game_state = 0;
 
     // 무한 루프를 돌며 polling방식으로 값을 확인
     while(1){

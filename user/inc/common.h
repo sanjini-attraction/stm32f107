@@ -2,7 +2,6 @@
 
 extern int values[PLAYER_MAX]; // 각 플레이어의 데이터 저장
 
-extern int cur_game;       // 현재 게임의 index
 extern int player_count;   // bluetooth로 받아올 총 플레이어 수
 extern int cur_player;     // 현재 플레이어의 index
 extern int game_state;     // 1(playing), 0(ready)

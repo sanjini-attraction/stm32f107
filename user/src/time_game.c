@@ -84,7 +84,7 @@ void timeGame_Configure(){
 /* ----------- Interrupt Handler ----------- */
 void timeGame_TimerHandler(){
     if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
-        printf("timer interrupt\n");
+        //printf("timer interrupt\n");
         if(game_state == 1) time_count++;
         // if (GPIO_ReadOutputDataBit(GPIOD, GPIO_Pin_2))
         //   GPIO_ResetBits(GPIOD, GPIO_Pin_2);
