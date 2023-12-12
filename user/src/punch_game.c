@@ -7,13 +7,10 @@
 #include "misc.h"
 
 #include "common.h"
-#include "common.c"
 #include "punch_game.h"
 
-// volatile unsigned 32bits
 volatile uint32_t ADC_Value;
 int max_mappedValue = 0;
-cur_player = 0;
 
 /* -----------     Configure     ----------- */
 void RccInit(void) {
@@ -70,7 +67,6 @@ void DMA_Configure(void) {
 }
 
 void punchGame_Configure(void) {
-  SystemInit();
   RccInit();
   GpioInit();
   AdcInit();
@@ -82,7 +78,7 @@ int mapping(int punch_value, int in_min, int in_max, int out_min, int out_max){
     return (punch_value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-void punchGame_turnHandler(){
+void punchGame_turnHandler(){ 
     if(game_state == 0){  // 이제 턴 시작 (ready)
     }
     else{  // 해당 플레이어의 턴 종료
@@ -101,20 +97,17 @@ void punchGame_turnHandler(){
 }
 
 void punchGame(){
-  // 모든 플레이어가 턴을 종료했을 때 게임 종료
-    if (allTurnEnd) {
-      cur_player = 0;
-      return 0;
-    }
-    // 게임 시작
-    int punch_pressure = 0;
+    int mappedValue, punch_pressure = 0;
+  	cur_player = 0;
     game_state = 0;
+
     while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
-      while (game_state == 1){
+      while(game_state == 1){
         punch_pressure = ADC_Value;
         punch_pressure = punch_pressure > 400 ? 400 : (punch_pressure < 100) ? 100 : punch_pressure;
-        int mappedValue = mapping(punch_pressure, 100, 400, 1, 100);
-        if (mappedValue > max_mappedValue) max_mappedValue = mappedValue;
+        mappedValue = mapping(punch_pressure, 100, 400, 1, 100);
+        
+		if (mappedValue > max_mappedValue) max_mappedValue = mappedValue;
       }
    }
 }

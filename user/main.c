@@ -5,9 +5,8 @@
 #include "stm32f10x_tim.h"
 #include "stm32f10x_usart.h"
 #include "misc.h"
-#include "lcd.h"
-#include "touch.h"
 
+#include "punch_game.h"
 #include "time_game.h"
 #include "some_game.h"
 #include "common.h"
@@ -15,7 +14,7 @@
 
 int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
 
-int player_count = 0;   // bluetooth로 받아올 총 플레이어 수
+int player_count = 3;   // bluetooth로 받아올 총 플레이어 수
 int cur_player = 0;     // 현재 플레이어의 index
 int game_state = 0;     // 1(playing), 0(ready)
 
@@ -58,13 +57,15 @@ void USART2_IRQHandler(){ io_USART2_IRQHandler();}
 
 void Init(){
 	SystemInit();
-	turnButton_Button_Configure();
 
-    io_Configure();
-	timeGame_Configure();
-	
-	// 해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정
+  // configure
+  io_Configure();
+	turnButton_Button_Configure();
+  
+  // game configure9(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
 	someGame_Configure();
+	timeGame_Configure();
+  punchGame_Configure();
 }
 
 int main(){
