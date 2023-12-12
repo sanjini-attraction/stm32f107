@@ -1,6 +1,7 @@
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_exti.h"
 #include "stm32f10x_rcc.h"
+#include "misc.h"
 
 #include "common.h"
 
@@ -50,3 +51,5 @@ void turnButton_Handler(){
         default: break;
     }
 }
+
+void turnEnd_Button_Configure(){}
