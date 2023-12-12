@@ -54,5 +54,3 @@ void turnButton_Handler(){
         default: break;
     }
 }
-
-void turnEnd_Button_Configure(){}

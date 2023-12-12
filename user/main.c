@@ -44,42 +44,36 @@ char allTurnEnd = 0;    // 모든 플레이어가 턴을 종료했는지 확인
   5. main
 */
 
-void TIM2_IRQHandler(){
-	timeGame_TimerHandler();
-}
-void EXTI4_IRQHandler(){
-	turnButton_Handler();
-}
-// void EXTI?_IRQHandler(){
-// 	timeGame_TouchHandler();
-// }
 
-void USART1_IRQHandler(){
-    sendMessage();
-}
-void USART2_IRQHandler() {
-    io_USART2_IRQHandler();
-    // game_state = 1;
-}
+// turnEnd button interrupt handler
+void EXTI4_IRQHandler(){ turnButton_Handler(); }
+
+// timeGame Interrupt
+void EXTI0_IRQHandler(){ timeGame_TouchHandler(); }
+void TIM2_IRQHandler(){ timeGame_TimerHandler(); }
+
+// bluetooth & PuTTY Interrupt
+void USART1_IRQHandler(){ io_USART1_IRQHandler(); }
+void USART2_IRQHandler(){ io_USART2_IRQHandler();}
 
 void Init(){
 	SystemInit();
-	turnEnd_Button_Configure();
+	turnButton_Button_Configure();
 
+    io_Configure();
 	timeGame_Configure();
 	
 	// 해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정
 	someGame_Configure();
-    io_Configure();
 }
 
 int main(){
   Init();
 
   while(1){
-    someGame();
     if(allTurnEnd){
-      // sendMessage();
+      // send_values();
+
       allTurnEnd = 0;
       cur_player = 0;
     }

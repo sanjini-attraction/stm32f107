@@ -11,9 +11,9 @@ int time_count = 0;
 
 /* -----------     Configure     ----------- */
 void touch_exti_Configure(){
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource4);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
     EXTI_InitTypeDef touch = {
-        .EXTI_Line = EXTI_Line4,
+        .EXTI_Line = EXTI_Line0,
         .EXTI_Mode = EXTI_Mode_Interrupt,
         .EXTI_Trigger = EXTI_Trigger_Falling,
         .EXTI_LineCmd = ENABLE
@@ -23,15 +23,15 @@ void touch_exti_Configure(){
 }
 void touch_gpio_Configure(){
     GPIO_InitTypeDef touch = {
-        .GPIO_Pin = GPIO_Pin_4,
+        .GPIO_Pin = GPIO_Pin_0,
         .GPIO_Mode = GPIO_Mode_IPU
     };
-    GPIO_Init(GPIOC, &touch);
+    GPIO_Init(GPIOA, &touch);
 }
 void touch_nvic_Configure(){
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     NVIC_InitTypeDef touch = {
-        .NVIC_IRQChannel = EXTI4_IRQn,
+        .NVIC_IRQChannel = EXTI0_IRQn,
         .NVIC_IRQChannelPreemptionPriority = 0x0,
         .NVIC_IRQChannelSubPriority = 0x0,
         .NVIC_IRQChannelCmd = ENABLE
@@ -51,7 +51,6 @@ void timer_Configure(){
 }
 void timer_interrupt_Configure(){
     TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-    TIM_Cmd(TIM2, ENABLE);
 }
 void timer_nvic_Configure(){
     NVIC_InitTypeDef timer2 = {
@@ -65,7 +64,7 @@ void timer_nvic_Configure(){
 
 void timeGame_Configure(){
     // RCC Configure
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE); // KEY1(PC4)
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); // KEY4(PA0)
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
@@ -84,7 +83,6 @@ void timeGame_Configure(){
 /* ----------- Interrupt Handler ----------- */
 void timeGame_TimerHandler(){
     if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
-        //printf("timer interrupt\n");
         if(game_state == 1) time_count++;
         // if (GPIO_ReadOutputDataBit(GPIOD, GPIO_Pin_2))
         //   GPIO_ResetBits(GPIOD, GPIO_Pin_2);
@@ -94,8 +92,8 @@ void timeGame_TimerHandler(){
 }
 
 void timeGame_TouchHandler(){
-    if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
-        if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == Bit_RESET) {
+    if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
+        if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET) {
             if(game_state == 0){  // 턴 시작
                 time_count = 0;
                 TIM_Cmd(TIM2, ENABLE);
@@ -106,7 +104,7 @@ void timeGame_TouchHandler(){
             }
             game_state = !game_state;
         }
-        EXTI_ClearITPendingBit(EXTI_Line4);
+        EXTI_ClearITPendingBit(EXTI_Line0);
     }
 } 
 
