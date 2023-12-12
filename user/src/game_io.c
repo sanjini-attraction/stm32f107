@@ -104,8 +104,6 @@ void io_NVIC_Configure(void) {
     NVIC_Init(&NVIC_InitStructure);
 }
 
-uint16_t io_char[100];
-
 void sendMessage() {
     // 게임 종료 후 결과를 핸드폰으로 전송함
     uint16_t io_arr[100] = {19, 30, 90, 10, 12};
@@ -117,13 +115,16 @@ void sendMessage() {
     USART_SendData(USART2, 1000);
     USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 }
+
+uint16_t io_char[100];
+int io_index = 0;
+
 void io_USART2_IRQHandler() {
     // 블루투스로부터 데이터 받고 컴퓨터한테 보냄
     uint16_t word;
     if(USART_GetITStatus(USART2,USART_IT_RXNE)!=RESET){
         word = USART_ReceiveData(USART2);
 
-        // char 형태로 배열에 저장함
         io_char[io_index] = word;
         io_index++;
 
@@ -131,6 +132,31 @@ void io_USART2_IRQHandler() {
         USART_ClearITPendingBit(USART2,USART_IT_RXNE);
     }
     // todo: char to int 변환 필요
+}
+
+void io_receivedDataParsing(){
+    // numbers = {index(게임 인덱스 - 0~2), people_count(인원 수), goal(목표 점수)}
+    int numbers[3];
+    int count = 0;
+    int currentNumber = 0;
+
+    for (int i = 0; i < 100; i++) {
+        if (io_char[i] >= '0' && io_char[i] <= '9') {
+            currentNumber = currentNumber * 10 + (io_char[i] - '0');
+        }
+        else if (io_char[i] == ' ' && io_char >= 0) {
+            numbers[count] = currentNumber;
+            count++;
+            currentNumber = 0;
+
+            if (count == 3) break;
+        }
+    }
+    printf("received data: ")
+    for (int i = 0; i < count; i++) {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n")
 }
 
 void io_Configure() {
