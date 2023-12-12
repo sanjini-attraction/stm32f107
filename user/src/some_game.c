@@ -1,4 +1,5 @@
 // #include "stm3210x_???.h"
+#include <stdint.h>
 
 #include "some_game.h"
 #include "common.h"

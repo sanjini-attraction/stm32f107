@@ -2,6 +2,7 @@
 #include "stm32f10x_exti.h"
 #include "stm32f10x_tim.h"
 #include "stm32f10x_rcc.h"
+#include "misc.h"
 
 #include "time_game.h"
 #include "common.h"
@@ -54,10 +55,10 @@ void timer_interrupt_Configure(){
 }
 void timer_nvic_Configure(){
     NVIC_InitTypeDef timer2 = {
-        .NVIC_IRQChannel = TIM2_IRQn;
-        .NVIC_IRQChannelPreemptionPriority = 0x0; 
-        .NVIC_IRQChannelSubPriority = 0x0; 
-        .NVIC_IRQChannelCmd = ENABLE;
+        .NVIC_IRQChannel = TIM2_IRQn,
+        .NVIC_IRQChannelPreemptionPriority = 0x0,
+        .NVIC_IRQChannelSubPriority = 0x0,
+        .NVIC_IRQChannelCmd = ENABLE
     };
     NVIC_Init(&timer2);
 }
