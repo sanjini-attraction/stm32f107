@@ -44,7 +44,6 @@ void shakeGame_Configure(){
 }
 
 
-cur_player = 0;
 int count;
 
 
@@ -66,12 +65,7 @@ void shakeGame_turnHandler(){
     game_state = !game_state;
 }
 
-void shakeGame(){
-  // 모든 플레이어가 턴을 종료했을 때 게임 종료
-    if (allTurnEnd) {
-      cur_player = 0;
-      return 0;
-    }
+void shakeGame(){      
     // 게임 시작
     int punch_pressure = 0;
     game_state = 0;
