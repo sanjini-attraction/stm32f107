@@ -7,7 +7,7 @@
 #include "time_game.h"
 #include "common.h"
 
-int time_count = 0;
+int time_count, timer_running;
 
 /* -----------     Configure     ----------- */
 void touch_exti_Configure(){
@@ -82,40 +82,40 @@ void timeGame_Configure(){
 
 /* ----------- Interrupt Handler ----------- */
 void timeGame_TimerHandler(){
-    if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
-        if(game_state == 1) time_count++;
-        // if (GPIO_ReadOutputDataBit(GPIOD, GPIO_Pin_2))
-        //   GPIO_ResetBits(GPIOD, GPIO_Pin_2);
-        // else GPIO_SetBits(GPIOD, GPIO_Pin_2);         
-    }
+    if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+        time_count++;
+
     TIM_ClearITPendingBit(TIM2, TIM_IT_Update); 
 }
 
 void timeGame_TouchHandler(){
     if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
         if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET) {
-            if(game_state == 0){  // 턴 시작
-                time_count = 0;
+            if(timer_running == 0)
                 TIM_Cmd(TIM2, ENABLE);
-            }
-            else{ // 턴 종료
-                TIM_Cmd(TIM2, DISABLE);
-                timeGame_turnEnd();
-            }
-            game_state = !game_state;
+            else TIM_Cmd(TIM2, DISABLE);
+
+            timer_running = !timer_running;
         }
         EXTI_ClearITPendingBit(EXTI_Line0);
     }
 } 
 
 /* -----------    Game Control   ----------- */
-void timeGame_turnEnd(){
-    // 모든 플레이어의 턴 종료(게임 종료)
-    if(cur_player+1 == player_count){
-        allTurnEnd = 1;
+void timeGame_turnHandler(){
+    if(game_state == 0){  // 턴 시작
+        time_count = 0;
+        timer_running = 0;
+        TIM_Cmd(TIM2, DISABLE);
     }
-    else{
+    else{ // 턴 종료
         values[cur_player] = time_count; // 기록 저장
         cur_player++;
+
+        if(cur_player == player_count)
+            allTurnEnd = 1;        
     }
+}
+void timeGame(){
+    while(!allTurnEnd);
 }
