@@ -14,11 +14,11 @@
 
 int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
 
-int player_count = 3;   // bluetooth로 받아올 총 플레이어 수
-int cur_player = 0;     // 현재 플레이어의 index
-int game_state = 0;     // 1(playing), 0(ready)
-
-char allTurnEnd = 0;    // 모든 플레이어가 턴을 종료했는지 확인
+int cur_game = 0;
+int player_count = 3
+int cur_player = 0;
+int game_state = 0;
+int allTurnEnd = 0;
 
 /*
   main: flaot value[PLAYER_MAX] = {};
@@ -62,8 +62,8 @@ void Init(){
   io_Configure();
 	turnButton_Button_Configure();
   
-  // game configure9(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
-	someGame_Configure();
+  	// game configure(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
+	// someGame_Configure();  // 예시
 	timeGame_Configure();
   punchGame_Configure();
 }
@@ -71,12 +71,23 @@ void Init(){
 int main(){
   Init();
 
-  while(1){
-    if(allTurnEnd){
-      // send_values();
+	while(1){
+		// 게임 데이터를 받아올 때까지 대기
+		// while(getGameData);
 
-      allTurnEnd = 0;
-      cur_player = 0;
-    }
-  }
+		// 게임 데이터 초기화
+		allTurnEnd = 0;
+		cur_player = 0;
+		game_state = 0;
+
+		switch(cur_game){
+			// case 0: someGame();	 break;  // 예시
+			case 1: punchGame(); break;
+			case 2: timeGame();	 break;
+			// case 3: 
+			default: 			 break;
+		}
+		
+		// send_values();
+	}
 }

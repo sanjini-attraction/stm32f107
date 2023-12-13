@@ -92,14 +92,10 @@ void punchGame_turnHandler(){
         if(cur_player == player_count)
           allTurnEnd = 1;
     }
-    // 게임 상태 변경
-    game_state = !game_state;
 }
 
 void punchGame(){
     int mappedValue, punch_pressure = 0;
-  	cur_player = 0;
-    game_state = 0;
 
     while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
       while(game_state == 1){
