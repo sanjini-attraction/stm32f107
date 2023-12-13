@@ -3,9 +3,23 @@
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_usart.h"
 #include "stm32f10x_tim.h"
+#include "stm32f10x_usart.h"
 #include "misc.h"
-#include "lcd.h"
-#include "touch.h"
+
+#include "shake_game.h"
+#include "punch_game.h"
+#include "time_game.h"
+#include "some_game.h"
+#include "common.h"
+#include "game_io.h"
+
+int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
+
+int player_count = 3;   // bluetooth로 받아올 총 플레이어 수
+int cur_player = 0;     // 현재 플레이어의 index
+int game_state = 0;     // 1(playing), 0(ready)
+
+char allTurnEnd = 0;    // 모든 플레이어가 턴을 종료했는지 확인
 
 /*
   main: flaot value[PLAYER_MAX] = {};
@@ -29,68 +43,42 @@
   4. 앱: 알아서
   5. main
 */
-#define PLAYER_MAX 10
-int values[PLAYER_MAX] = {};
 
-void RCC_Configure() {
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-}
-void TouchSensor_Configure(){
-  GPIO_InitTypeDef touch1;
-  touch1.GPIO_Pin = GPIO_Pin_4;
-  touch1.GPIO_Mode = GPIO_Mode_IPU;
-  GPIO_Init(GPIOB, &touch1);
-}
 
-void EXTI_Configure(){
-  EXTI_InitTypeDef touch1 = {
-    .EXTI_Line = EXTI_Line4,
-    .EXTI_Mode = EXTI_Mode_Interrupt,
-    .EXTI_Trigger = EXTI_Trigger_Falling,
-    .EXTI_LineCmd = ENABLE
-  };
-  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource4);
-  EXTI_Init(&touch1);
-}
+// turnEnd button interrupt handler
+void EXTI4_IRQHandler(){ turnButton_Handler(); }
 
-void NVIC_Configure(){
-  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+// timeGame Interrupt
+void EXTI0_IRQHandler(){ timeGame_TouchHandler(); }
+void TIM2_IRQHandler(){ timeGame_TimerHandler(); }
 
-  NVIC_InitTypeDef touch1 = {
-    .NVIC_IRQChannel = EXTI4_IRQn,
-    .NVIC_IRQChannelPreemptionPriority = 0x0,
-    .NVIC_IRQChannelSubPriority = 0x0,
-    .NVIC_IRQChannelCmd = ENABLE
-  };
-  NVIC_Init(&touch1);
-}
+// bluetooth & PuTTY Interrupt
+void USART1_IRQHandler(){ io_USART1_IRQHandler(); }
+void USART2_IRQHandler(){ io_USART2_IRQHandler();}
 
-void EXTI4_IRQHandler() {
-  if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
-    if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == Bit_RESET) {
-      // Todo
-    }
-    EXTI_ClearITPendingBit(EXTI_Line4);
-  }
-}
+void Init(){
+	SystemInit();
 
-void Init() {
-  SystemInit();
-  RCC_Configure();
-
-  // GPIO_Configure
-  TouchSensor_Configure();
-
-  EXTI_Configure();
-  NVIC_Configure();
+  // configure
+  io_Configure();
+	turnButton_Button_Configure();
+  
+  // game configure9(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
+	someGame_Configure();
+	timeGame_Configure();
+  punchGame_Configure();
+  shakeGame_Configure();
 }
 
 int main(){
   Init();
 
   while(1){
-    // Todo
+    if(allTurnEnd){
+      // send_values();
+
+      allTurnEnd = 0;
+      cur_player = 0;
+    }
   }
 }
