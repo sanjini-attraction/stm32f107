@@ -6,6 +6,7 @@
 #include "stm32f10x_usart.h"
 #include "misc.h"
 
+#include "shake_game.h"
 #include "punch_game.h"
 #include "time_game.h"
 #include "some_game.h"
@@ -66,6 +67,7 @@ void Init(){
 	// someGame_Configure();  // 예시
 	timeGame_Configure();
   punchGame_Configure();
+  shakeGame_Configure();
 }
 
 int main(){
