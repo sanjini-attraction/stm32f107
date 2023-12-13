@@ -1,13 +1,26 @@
 #define PLAYER_MAX 100
 
-extern int values[PLAYER_MAX]; // 각 플레이어의 데이터 저장
+// 각 플레이어의 데이터 저장
+extern int values[PLAYER_MAX];
 
-extern int cur_game;       // 현재 게임의 index
-extern int player_count;   // bluetooth로 받아올 총 플레이어 수
-extern int cur_player;     // 현재 플레이어의 index
-extern int game_state;     // 1(playing), 0(ready)
+// 블루투스 연결시 값을 받아왔는지에 대한 상태 관리
+// 2: 파싱까지 완료 | 1: 데이터 받아옴 | 0: 아직 다 안 받아옴
+extern int is_data_received;
 
-extern int allTurnEnd;    // 모든 플레이어가 턴을 종료했는지 확인
+// 현재 게임의 index
+extern int cur_game;
+
+// 총 플레이어 수
+extern int player_count;
+
+// 현재 플레이어의 index
+extern int cur_player;
+
+// 1(playing), 0(ready)
+extern int game_state;
+
+// 모든 플레이어가 턴을 종료했는지 확인
+extern int allTurnEnd;
 
 /*
     여러 게임에서 공통적으로 사용하는 함수들

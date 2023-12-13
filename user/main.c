@@ -15,6 +15,7 @@
 
 int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
 
+int is_data_received = 0;
 int cur_game = 0;
 int player_count = 3
 int cur_player = 0;
@@ -53,18 +54,15 @@ void EXTI0_IRQHandler(){ timeGame_TouchHandler(); }
 void TIM2_IRQHandler(){ timeGame_TimerHandler(); }
 
 // bluetooth & PuTTY Interrupt
-void USART1_IRQHandler(){ io_USART1_IRQHandler(); }
 void USART2_IRQHandler(){ io_USART2_IRQHandler();}
 
 void Init(){
-	SystemInit();
-
+  SystemInit();
   // configure
   io_Configure();
-	turnButton_Button_Configure();
-  
-  	// game configure(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
-	timeGame_Configure();
+  turnButton_Button_Configure();
+  // game configure(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
+  // timeGame_Configure();
   punchGame_Configure();
   shakeGame_Configure();
 }
@@ -74,7 +72,7 @@ int main(){
 
 	while(1){
 		// 게임 데이터를 받아올 때까지 대기
-		// while(getGameData);
+		while(is_data_received != 2);
 
 		// 게임 데이터 초기화
 		allTurnEnd = 0;
@@ -88,6 +86,6 @@ int main(){
 			default: 			 break;
 		}
 		
-		// send_values();
+		sendMessage();
 	}
 }
