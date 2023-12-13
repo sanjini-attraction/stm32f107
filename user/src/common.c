@@ -5,7 +5,7 @@
 
 #include "punch_game.h"
 #include "time_game.h"
-#include "some_game.h"
+#include "shake_game.h"
 #include "common.h"
 
 int cur_game = 0;
@@ -53,10 +53,9 @@ void turnButton_Handler(){
         if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == Bit_RESET) {
             // 현재 게임의 index에 따라, 해당 게임의 turnHandler를 호출
             switch(cur_game){
-                // case 0: someGame_turnHandler(); break;  // 예시
                 case 1: punchGame_turnHandler(); break;
-                case 2: timeGame_turnHandler(); break;
-                // case ??: ????_turnHandler(); break;
+                case 2: timeGame_turnHandler();  break;
+                case 3: shakeGame_turnHandler(); break;
                 default: break;
             }
 

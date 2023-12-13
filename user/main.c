@@ -64,7 +64,6 @@ void Init(){
 	turnButton_Button_Configure();
   
   	// game configure(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
-	// someGame_Configure();  // 예시
 	timeGame_Configure();
   punchGame_Configure();
   shakeGame_Configure();
@@ -83,10 +82,9 @@ int main(){
 		game_state = 0;
 
 		switch(cur_game){
-			// case 0: someGame();	 break;  // 예시
 			case 1: punchGame(); break;
 			case 2: timeGame();	 break;
-			// case 3: 
+			case 3: shakeGame(); break;
 			default: 			 break;
 		}
 		

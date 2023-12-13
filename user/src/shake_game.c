@@ -49,6 +49,7 @@ int count;
 
 void shakeGame_turnHandler(){
     if(game_state == 0){  // 이제 턴 시작 (ready)
+		count = 0;
     }
     else{  // 해당 플레이어의 턴 종료
         // 해당 플레이어의 값을 저장
@@ -61,24 +62,19 @@ void shakeGame_turnHandler(){
         if(cur_player == player_count)
           allTurnEnd = 1;
     }
-    // 게임 상태 변경
-    game_state = !game_state;
 }
 
 void shakeGame(){      
-    // 게임 시작
-    int punch_pressure = 0;
-    game_state = 0;
     while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
-      while (game_state == 1){
-        if(is_shaked(2)){
-          count++;          
-        }   
-        if(count > 100){
-          count = 0;
-        }             
-      }
-   }
+		if(game_state == 1){
+			if(is_shaked(2)){
+				count++;          
+			}   
+			if(count > 100){
+				count = 0;
+			}             
+		}
+	}
 }
 
 
