@@ -79,11 +79,14 @@ int mapping(int punch_value, int in_min, int in_max, int out_min, int out_max){
 }
 
 void punchGame_turnHandler(){ 
+  printf("turn called\n");
     if(game_state == 0){  // 이제 턴 시작 (ready)
+      printf("turn begin\n");
     }
     else{  // 해당 플레이어의 턴 종료
         // 해당 플레이어의 값을 저장
         values[cur_player] = max_mappedValue;
+        printf("player %d = %d\n", cur_player, max_mappedValue);
         // 현재 플레이어의 값을 초기화
         max_mappedValue = 0;
         // 다음 플레이어로 넘어감
@@ -91,18 +94,20 @@ void punchGame_turnHandler(){
         // 모든 플레이어가 턴을 종료했는지 확인
         if(cur_player == player_count)
           allTurnEnd = 1;
+
+        printf("turn End\n");
     }
 }
 
 void punchGame(){
     int mappedValue, punch_pressure = 0;
-
+    printf("in punch game\n");
     while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
       while(game_state == 1){
         punch_pressure = ADC_Value;
+        printf("adc = %d\n", ADC_Value);
         punch_pressure = punch_pressure > 400 ? 400 : (punch_pressure < 100) ? 100 : punch_pressure;
         mappedValue = mapping(punch_pressure, 100, 400, 1, 100);
-        
 		if (mappedValue > max_mappedValue) max_mappedValue = mappedValue;
       }
    }

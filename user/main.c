@@ -15,8 +15,9 @@
 int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
 
 int is_data_received = 0;
-// int cur_game = 0;
-int player_count = 3;
+// int is_data_received = 0;
+int cur_game = 0;
+int player_count = 3;;
 int cur_player = 0;
 int game_state = 0;
 int allTurnEnd = 0;
@@ -50,11 +51,12 @@ int allTurnEnd = 0;
 void EXTI4_IRQHandler(){ turnButton_Handler(); }
 
 // timeGame Interrupt
-void EXTI0_IRQHandler(){ timeGame_TouchHandler(); }
+void EXTI1_IRQHandler(){ printf("timer given\n"); timeGame_TouchHandler(); }
 void TIM2_IRQHandler(){ timeGame_TimerHandler(); }
 
 // bluetooth & PuTTY Interrupt
 void USART2_IRQHandler(){ io_USART2_IRQHandler();}
+void USART1_IRQHandler(){}
 
 void Init(){
 	SystemInit();
@@ -78,15 +80,16 @@ int main(){
 		player_count = 0;
     
 		// 게임 데이터를 받아올 때까지 대기
+        is_data_received = 0;
 		while(is_data_received != 2);
-		printf("data recevied %d %d\n", player_count, cur_game);
-
-		// 게임 데이터 초기화
+        printf("data received %d %d \n", player_count, cur_game);
+        // 게임 데이터 초기화
 		allTurnEnd = 0;
 		cur_player = 0;
 		game_state = 1;
 
 		switch(cur_game){
+			case 0: shakeGame(); break;
 			case 0: shakeGame(); break;
 			case 1: punchGame(); break;
 			case 2: timeGame();	 break;

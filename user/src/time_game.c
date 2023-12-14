@@ -11,9 +11,9 @@ int time_count, timer_running;
 
 /* -----------     Configure     ----------- */
 void touch_exti_Configure(){
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
     EXTI_InitTypeDef touch = {
-        .EXTI_Line = EXTI_Line0,
+        .EXTI_Line = EXTI_Line1,
         .EXTI_Mode = EXTI_Mode_Interrupt,
         .EXTI_Trigger = EXTI_Trigger_Falling,
         .EXTI_LineCmd = ENABLE
@@ -23,7 +23,7 @@ void touch_exti_Configure(){
 }
 void touch_gpio_Configure(){
     GPIO_InitTypeDef touch = {
-        .GPIO_Pin = GPIO_Pin_0,
+        .GPIO_Pin = GPIO_Pin_1,
         .GPIO_Mode = GPIO_Mode_IPU
     };
     GPIO_Init(GPIOA, &touch);
@@ -31,7 +31,7 @@ void touch_gpio_Configure(){
 void touch_nvic_Configure(){
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
     NVIC_InitTypeDef touch = {
-        .NVIC_IRQChannel = EXTI0_IRQn,
+        .NVIC_IRQChannel = EXTI1_IRQn,
         .NVIC_IRQChannelPreemptionPriority = 0x0,
         .NVIC_IRQChannelSubPriority = 0x0,
         .NVIC_IRQChannelCmd = ENABLE
@@ -85,25 +85,28 @@ void timeGame_TimerHandler(){
     if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
         time_count++;
 
+    printf("timer = %d\n", time_count);
     TIM_ClearITPendingBit(TIM2, TIM_IT_Update); 
 }
 
 void timeGame_TouchHandler(){
-    if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
-        if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET) {
+    printf("4 clicked\n");
+    if (EXTI_GetITStatus(EXTI_Line1) != RESET) {
+        if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) == Bit_RESET) {
             if(timer_running == 0)
                 TIM_Cmd(TIM2, ENABLE);
             else TIM_Cmd(TIM2, DISABLE);
 
             timer_running = !timer_running;
         }
-        EXTI_ClearITPendingBit(EXTI_Line0);
+        EXTI_ClearITPendingBit(EXTI_Line1);
     }
 } 
 
 /* -----------    Game Control   ----------- */
 void timeGame_turnHandler(){
     if(game_state == 0){  // 턴 시작
+        printf("turn begin\n");
         time_count = 0;
         timer_running = 0;
         TIM_Cmd(TIM2, DISABLE);
@@ -111,11 +114,14 @@ void timeGame_turnHandler(){
     else{ // 턴 종료
         values[cur_player] = time_count; // 기록 저장
         cur_player++;
+        printf("%d player time = %d\n", cur_player, time_count);
 
         if(cur_player == player_count)
             allTurnEnd = 1;        
     }
 }
 void timeGame(){
+    printf("in time_game %d\n", allTurnEnd);
     while(!allTurnEnd);
+    printf("game ended\n");
 }

@@ -8,7 +8,7 @@
 #include "shake_game.h"
 #include "common.h"
 
-int cur_game = 0;
+// int cur_game = 0;
 
 void turnButton_gpio_Configure(){
      GPIO_InitTypeDef button = {
