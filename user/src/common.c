@@ -8,7 +8,7 @@
 #include "shake_game.h"
 #include "common.h"
 
-int cur_game = 0;
+// int cur_game = 0;
 
 void turnButton_gpio_Configure(){
      GPIO_InitTypeDef button = {
@@ -53,9 +53,9 @@ void turnButton_Handler(){
         if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == Bit_RESET) {
             // 현재 게임의 index에 따라, 해당 게임의 turnHandler를 호출
             switch(cur_game){
+                case 0: shakeGame_turnHandler(); break;
                 case 1: punchGame_turnHandler(); break;
                 case 2: timeGame_turnHandler();  break;
-                case 3: shakeGame_turnHandler(); break;
                 default: break;
             }
 
