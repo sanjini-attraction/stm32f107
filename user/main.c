@@ -9,17 +9,18 @@
 #include "shake_game.h"
 #include "punch_game.h"
 #include "time_game.h"
-#include "some_game.h"
 #include "common.h"
 #include "game_io.h"
 
 int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
 
-int cur_game = 0;
-int player_count = 3
+int is_data_received = 0;
+// int cur_game = 0;
+int player_count = 3;
 int cur_player = 0;
 int game_state = 0;
 int allTurnEnd = 0;
+
 
 /*
   main: flaot value[PLAYER_MAX] = {};
@@ -53,41 +54,44 @@ void EXTI0_IRQHandler(){ timeGame_TouchHandler(); }
 void TIM2_IRQHandler(){ timeGame_TimerHandler(); }
 
 // bluetooth & PuTTY Interrupt
-void USART1_IRQHandler(){ io_USART1_IRQHandler(); }
 void USART2_IRQHandler(){ io_USART2_IRQHandler();}
 
 void Init(){
 	SystemInit();
 
-  // configure
-  io_Configure();
+  	// configure
+  	io_Configure();
 	turnButton_Button_Configure();
   
-  	// game configure(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
+	// game configure(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)
 	timeGame_Configure();
-  punchGame_Configure();
-  shakeGame_Configure();
+	punchGame_Configure();
+	shakeGame_Configure();
 }
 
 int main(){
   Init();
 
 	while(1){
+		cur_game  = 0;
+		is_data_received = 0;
+		player_count = 0;
+    
 		// 게임 데이터를 받아올 때까지 대기
-		// while(getGameData);
+		while(is_data_received != 2);
+		printf("data recevied %d %d\n", player_count, cur_game);
 
 		// 게임 데이터 초기화
 		allTurnEnd = 0;
 		cur_player = 0;
-		game_state = 0;
+		game_state = 1;
 
 		switch(cur_game){
+			case 0: shakeGame(); break;
 			case 1: punchGame(); break;
 			case 2: timeGame();	 break;
-			case 3: shakeGame(); break;
 			default: 			 break;
 		}
-		
-		// send_values();
+		sendMessage();
 	}
 }

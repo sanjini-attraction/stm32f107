@@ -5,7 +5,11 @@
 #include "stm32f10x_rcc.h"
 #include "misc.h"
 
+#include "common.h"
 #include "game_io.h"
+
+uint16_t io_char[100] = {0, }; // 받아온 값을 저장
+int io_index = 0;
 
 /* -----------  Configure ---------- */
 void io_rcc_Configure(){
@@ -105,19 +109,48 @@ void io_NVIC_Configure(void) {
 }
 
 void sendMessage() {
+    printf("sendMessage called\n");
+    // todo: 일단 되는지 확인하고 io_arr -> values, 5 -> player_count로 변경
     // 게임 종료 후 결과를 핸드폰으로 전송함
-    uint16_t io_arr[100] = {19, 30, 90, 10, 12};
-    for(int i=0; i<5; i++){
-        USART_SendData(USART2, io_arr[i]);
+    for(int i=0; i<player_count; i++){
+        USART_SendData(USART2, values[i]);
         for(int i=0; i<2000000; i++); // delay
     }
 
     USART_SendData(USART2, 1000);
+    for(int i=0; i<2000000; i++); // delay
     USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 }
 
-uint16_t io_char[100];
-int io_index = 0;
+
+void io_receivedDataParsing(){
+    // numbers = {index(게임 인덱스 - 0~2), people_count(인원 수), goal(목표 점수)}
+    int numbers[100] = {0, };
+    int io_count = 0;
+    int currentNumber = 0;
+
+    for (int i = 0; i < 100; i++) {
+        if (io_char[i] >= '0' && io_char[i] <= '9') {
+            currentNumber = currentNumber * 10 + (io_char[i] - '0');
+        }
+        else if (io_char[i] == ' ' && io_char >= 0) {
+            numbers[io_count] = currentNumber;
+            io_count++;
+            currentNumber = 0;
+
+            if (io_count == 3) break;
+        }
+    }
+
+    cur_game = numbers[0];
+    player_count = numbers[1];
+    is_data_received = 2;
+     for (int i = 0; i < 100; i++) {
+        io_char[i] = 0;
+     }
+
+    //printf("in io: curgame - %d player_count %d\n", cur_game, player_count);
+}
 
 void io_USART2_IRQHandler() {
     // 블루투스로부터 데이터 받고 컴퓨터한테 보냄
@@ -128,35 +161,19 @@ void io_USART2_IRQHandler() {
         io_char[io_index] = word;
         io_index++;
 
+        if (word == 'A') {
+            is_data_received = 1;
+        }
+
         USART_SendData(USART1, word);
         USART_ClearITPendingBit(USART2,USART_IT_RXNE);
     }
-    // todo: char to int 변환 필요
-}
-
-void io_receivedDataParsing(){
-    // numbers = {index(게임 인덱스 - 0~2), people_count(인원 수), goal(목표 점수)}
-    int numbers[3];
-    int count = 0;
-    int currentNumber = 0;
-
-    for (int i = 0; i < 100; i++) {
-        if (io_char[i] >= '0' && io_char[i] <= '9') {
-            currentNumber = currentNumber * 10 + (io_char[i] - '0');
-        }
-        else if (io_char[i] == ' ' && io_char >= 0) {
-            numbers[count] = currentNumber;
-            count++;
-            currentNumber = 0;
-
-            if (count == 3) break;
-        }
+    // io_char은 현재 {'0', ' ', '1', '2' } 이렇게 저장되어 있기 때문에
+    // 이를 int형으로 parsing하는 작업이 필요
+    printf("mymessage: %c \n", word);
+    if (is_data_received == 1) {
+        io_receivedDataParsing();
     }
-    printf("received data: ")
-    for (int i = 0; i < count; i++) {
-        printf("%d ", numbers[i]);
-    }
-    printf("\n")
 }
 
 void io_Configure() {
