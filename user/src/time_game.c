@@ -121,7 +121,7 @@ void timeGame_turnHandler(){
     }
 }
 void timeGame(){
-    printf("in time_game %d\n", allTurnEnd);
+    printf("in time_game\n");
     while(!allTurnEnd);
     printf("game ended\n");
 }

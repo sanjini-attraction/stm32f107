@@ -72,7 +72,7 @@ void Init(){
 }
 
 int main(){
-  Init();
+	Init();
 
 	while(1){
 		cur_game  = 0;
@@ -80,14 +80,13 @@ int main(){
 		player_count = 0;
     
 		// 게임 데이터를 받아올 때까지 대기
-        is_data_received = 0;
 		while(is_data_received != 2);
         printf("data received %d %d \n", player_count, cur_game);
-        // 게임 데이터 초기화
+        
+		// 게임 데이터 초기화
 		allTurnEnd = 0;
 		cur_player = 0;
 		game_state = 1;
-
 		switch(cur_game){
 			case 0: shakeGame(); break;
 			case 0: shakeGame(); break;

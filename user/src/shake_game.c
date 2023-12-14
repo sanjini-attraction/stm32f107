@@ -10,15 +10,9 @@ int count;
 void enable_ports() {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); // KEY4(PB10)
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-	// volatile unsigned int *REG_APB2_CLOCK = MEM_OFFSET(BASE_RCC, OFFSET_APB2_CLOCK);
-	// *REG_APB2_CLOCK = 0x3C;
 }
 
 void set_input_output() {
-    // GPIO_InitTypeDef GPIO_InitStructure;
-    // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-    // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-    // GPIO_Init(GPIOB, &GPIO_InitStructure);
     GPIO_InitTypeDef touch = {
         .GPIO_Pin = GPIO_Pin_10,
         .GPIO_Mode = GPIO_Mode_IPU
@@ -34,12 +28,6 @@ void shakeGame_Configure(){
 /* -----------    Game Control   ----------- */
 int is_shaked(int btn) {
   	return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10) == Bit_RESET;  // sensor input : PB10
-	// volatile unsigned int *PORT_B_INPUT = MEM_OFFSET(BASE_PORT_B, OFFSET_INPUT_DATA);    
-	// if (btn == 2) {
-	//   volatile unsigned int input = *PORT_B_INPUT;
-	//   return (input & 0x400) != 0x400;
-	// }  
-	// return 0;
 }
 
 void shakeGame_turnHandler(){
@@ -63,15 +51,8 @@ void shakeGame_turnHandler(){
 void shakeGame(){      
     while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
 		if(game_state == 1){
-			if(is_shaked(2)){
-				count++;          
-			}   
-			if(count > 100){
-				count = 0;
-			}             
+			if(is_shaked(2)) count++;   
+			if(count > 100) count = 0;
 		}
 	}
 }
-
-
-

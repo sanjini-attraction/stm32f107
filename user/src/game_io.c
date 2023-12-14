@@ -209,6 +209,7 @@ void io_USART2_IRQHandler() {
     printf("mymessage: %c \n", word);
     if (is_data_received == 1) {
         io_receivedDataParsing();
+    }
     // io_char은 현재 {'0', ' ', '1', '2' } 이렇게 저장되어 있기 때문에
     // 이를 int형으로 parsing하는 작업이 필요
     printf("mymessage: %c \n", word);
