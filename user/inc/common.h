@@ -36,7 +36,7 @@ extern int is_data_received;
     game_state : 게임의 상태(1: 게임 진행중 | 0: 게임 종료)
     allTurnEnd : 모든 플레이어가 턴을 종료했는지 확인
 */
-extern int led_state;
+//extern int led_state;
 extern int cur_player;
 extern int game_state;
 extern int allTurnEnd;

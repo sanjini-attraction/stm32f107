@@ -1,0 +1,251 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V9.50.1.380/W64 for ARM         21/Dec/2023  20:16:29
+# Copyright 1999-2023 IAR Systems AB.
+#
+#    Cpu mode          =  thumb
+#    Endian            =  little
+#    Source file       =  C:\stm32f107\test\stm32f107\user\src\some_game.c
+#    Command line      =
+#        -f
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\some_game.o.rsp
+#        (C:\stm32f107\test\stm32f107\user\src\some_game.c -D
+#        USE_STDPERIPH_DRIVER -D STM32F10X_CL -lC
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir -o
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\Startup\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\inc\
+#        -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\src\
+#        -I C:\stm32f107\test\stm32f107\user\ -I
+#        C:\stm32f107\test\stm32f107\user\inc\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\LCD\ -I
+#        C:\stm32f107\test\stm32f107\user\src\ -Ol -I "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\CMSIS\Core\Include\\")
+#        --dependencies=n
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\some_game.o.iar_deps
+#    Locale            =  C
+#    List file         =
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir\some_game.lst
+#    Object file       =
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\some_game.o
+#    Runtime model:       
+#      __CPP_Runtime   =  1
+#      __SystemLibrary =  DLib
+#      __dlib_version  =  6
+#
+###############################################################################
+
+C:\stm32f107\test\stm32f107\user\src\some_game.c
+      1          // #include "stm3210x_???.h"
+      2          #include <stdint.h>
+      3          
+      4          #include "some_game.h"
+      5          #include "common.h"
+      6          
+
+   \                                 In section .bss, align 4
+      7          volatile uint32_t some_ADCValue;
+   \                     some_ADCValue:
+   \        0x0                      DS8 4
+
+   \                                 In section .bss, align 4
+      8          int curUserValue = 0;
+   \                     curUserValue:
+   \        0x0                      DS8 4
+      9          
+     10          /* -----------     Configure     ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+     11          void someGame_Configure(){
+     12              // 게임에서 사용하는 모든 GPIO, EXTI, NVIC, DMA, Timer등을 설정
+     13          
+     14              // sensor RCC Configure
+     15              // sensor GPIO Configure
+     16          
+     17              // sensor DMA Configure
+     18              // or
+     19              // sensor EXTI Configure
+     20              // sensor NVIC Configure
+     21          }
+   \                     someGame_Configure: (+1)
+   \        0x0   0x4770             BX       LR
+     22          
+     23          /* ----------- Interrupt Handler ----------- */
+     24          // 게임이 인터럽트 방식으로 동작할 때, 인터럽트 핸들러를 정의
+     25          
+     26          /* -----------    Game Control   ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+     27          void someGame_turnHandler(){
+   \                     someGame_turnHandler: (+1)
+   \        0x0   0xB430             PUSH     {R4,R5}
+     28              if(game_state == 0){  // 이제 턴 시작
+   \        0x2   0x....             LDR.N    R1,??DataTable2
+   \        0x4   0x6808             LDR      R0,[R1, #+0]
+   \        0x6   0x2800             CMP      R0,#+0
+   \        0x8   0xD013             BEQ.N    ??someGame_turnHandler_0
+     29              }
+     30              else{  // 해당 플레이어의 턴 종료
+     31                  // 해당 플레이어의 값을 저장
+     32                  values[cur_player] = curUserValue;
+   \        0xA   0x....             LDR.N    R0,??DataTable2_1
+   \        0xC   0x....             LDR.N    R2,??DataTable2_2
+   \        0xE   0x6815             LDR      R5,[R2, #+0]
+   \       0x10   0x....             LDR.N    R4,??DataTable2_3
+   \       0x12   0x6803             LDR      R3,[R0, #+0]
+   \       0x14   0xF844 0x5023      STR      R5,[R4, R3, LSL #+2]
+     33                  // 현재 플레이어의 값을 초기화
+     34                  curUserValue = 0;
+   \       0x18   0x2300             MOVS     R3,#+0
+   \       0x1A   0x6013             STR      R3,[R2, #+0]
+     35                  // 다음 플레이어로 넘어감
+     36                  cur_player++;
+   \       0x1C   0x6802             LDR      R2,[R0, #+0]
+   \       0x1E   0x1C52             ADDS     R2,R2,#+1
+   \       0x20   0x6002             STR      R2,[R0, #+0]
+     37          
+     38                  // 모든 플레이어가 턴을 종료했는지 확인
+     39                  if(cur_player == player_count)
+   \       0x22   0x6800             LDR      R0,[R0, #+0]
+   \       0x24   0x....             LDR.N    R2,??DataTable2_4
+   \       0x26   0x6812             LDR      R2,[R2, #+0]
+   \       0x28   0x4290             CMP      R0,R2
+   \       0x2A   0xD102             BNE.N    ??someGame_turnHandler_0
+     40                      allTurnEnd = 1;
+   \       0x2C   0x2201             MOVS     R2,#+1
+   \       0x2E   0x....             LDR.N    R0,??DataTable2_5
+   \       0x30   0x6002             STR      R2,[R0, #+0]
+     41              }
+     42          
+     43              // 게임 상태 변경
+     44              game_state = !game_state;
+   \                     ??someGame_turnHandler_0: (+1)
+   \       0x32   0x6808             LDR      R0,[R1, #+0]
+   \       0x34   0x2800             CMP      R0,#+0
+   \       0x36   0xD102             BNE.N    ??someGame_turnHandler_1
+   \       0x38   0x2001             MOVS     R0,#+1
+   \       0x3A   0x6008             STR      R0,[R1, #+0]
+   \       0x3C   0xE001             B.N      ??someGame_turnHandler_2
+   \                     ??someGame_turnHandler_1: (+1)
+   \       0x3E   0x2000             MOVS     R0,#+0
+   \       0x40   0x6008             STR      R0,[R1, #+0]
+     45          }
+   \                     ??someGame_turnHandler_2: (+1)
+   \       0x42   0xBC30             POP      {R4,R5}
+   \       0x44   0x4770             BX       LR
+     46          
+
+   \                                 In section .text, align 2, keep-with-next
+     47          void someGame(){
+     48              // 게임 시작
+     49              // 플레이어 수 초기화
+     50              cur_player = 0;
+   \                     someGame: (+1)
+   \        0x0   0x2100             MOVS     R1,#+0
+   \        0x2   0x....             LDR.N    R0,??DataTable2_1
+   \        0x4   0x6001             STR      R1,[R0, #+0]
+     51          
+     52              // 무한 루프를 돌며 polling방식으로 값을 확인
+     53              while(1){
+     54                  // 플레이어의 턴일 때만 로직을 실행
+     55                  if(game_state == 1){
+   \                     ??someGame_0: (+1)
+   \        0x6   0x....             LDR.N    R0,??DataTable2
+   \        0x8   0x6800             LDR      R0,[R0, #+0]
+   \        0xA   0x2801             CMP      R0,#+1
+   \        0xC   0xD107             BNE.N    ??someGame_1
+     56                      // ADC 값 볌위 조절
+     57          
+     58                      // 게임에 따라 ADC값의 Max나 Min값을 저장
+     59                      if(some_ADCValue > curUserValue)
+   \        0xE   0x....             LDR.N    R3,??DataTable2_6
+   \       0x10   0x....             LDR.N    R0,??DataTable2_2
+   \       0x12   0x6801             LDR      R1,[R0, #+0]
+   \       0x14   0x681A             LDR      R2,[R3, #+0]
+   \       0x16   0x4291             CMP      R1,R2
+   \       0x18   0xD201             BCS.N    ??someGame_1
+     60                          curUserValue = some_ADCValue;
+   \       0x1A   0x6819             LDR      R1,[R3, #+0]
+   \       0x1C   0x6001             STR      R1,[R0, #+0]
+     61                  }
+     62          
+     63                  // 모든 플레이어가 턴을 종료했을 때 게임 종료
+     64                  if(allTurnEnd) return;
+   \                     ??someGame_1: (+1)
+   \       0x1E   0x....             LDR.N    R0,??DataTable2_5
+   \       0x20   0x6800             LDR      R0,[R0, #+0]
+   \       0x22   0x2800             CMP      R0,#+0
+   \       0x24   0xD0EF             BEQ.N    ??someGame_0
+   \       0x26   0x4770             BX       LR
+     65              }
+     66          }
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2:
+   \        0x0   0x....'....        DC32     game_state
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_1:
+   \        0x0   0x....'....        DC32     cur_player
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_2:
+   \        0x0   0x....'....        DC32     curUserValue
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_3:
+   \        0x0   0x....'....        DC32     values
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_4:
+   \        0x0   0x....'....        DC32     player_count
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_5:
+   \        0x0   0x....'....        DC32     allTurnEnd
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_6:
+   \        0x0   0x....'....        DC32     some_ADCValue
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       0   someGame
+       0   someGame_Configure
+       8   someGame_turnHandler
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable2
+       4  ??DataTable2_1
+       4  ??DataTable2_2
+       4  ??DataTable2_3
+       4  ??DataTable2_4
+       4  ??DataTable2_5
+       4  ??DataTable2_6
+       4  curUserValue
+      40  someGame
+       2  someGame_Configure
+      70  someGame_turnHandler
+       4  some_ADCValue
+
+ 
+   8 bytes in section .bss
+ 140 bytes in section .text
+ 
+ 140 bytes of CODE memory
+   8 bytes of DATA memory
+
+Errors: none
+Warnings: none

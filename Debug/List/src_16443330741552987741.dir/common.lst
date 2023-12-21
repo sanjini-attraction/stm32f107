@@ -1,0 +1,396 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V9.50.1.380/W64 for ARM         21/Dec/2023  20:41:00
+# Copyright 1999-2023 IAR Systems AB.
+#
+#    Cpu mode          =  thumb
+#    Endian            =  little
+#    Source file       =  C:\stm32f107\test\stm32f107\user\src\common.c
+#    Command line      =
+#        -f
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\common.o.rsp
+#        (C:\stm32f107\test\stm32f107\user\src\common.c -D USE_STDPERIPH_DRIVER
+#        -D STM32F10X_CL -lC
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir -o
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\Startup\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\inc\
+#        -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\src\
+#        -I C:\stm32f107\test\stm32f107\user\ -I
+#        C:\stm32f107\test\stm32f107\user\inc\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\LCD\ -I
+#        C:\stm32f107\test\stm32f107\user\src\ -Ol -I "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\CMSIS\Core\Include\\")
+#        --dependencies=n
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\common.o.iar_deps
+#    Locale            =  C
+#    List file         =
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir\common.lst
+#    Object file       =
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\common.o
+#    Runtime model:       
+#      __CPP_Runtime   =  1
+#      __SystemLibrary =  DLib
+#      __dlib_version  =  6
+#
+###############################################################################
+
+C:\stm32f107\test\stm32f107\user\src\common.c
+      1          #include "stm32f10x_gpio.h"
+      2          #include "stm32f10x_exti.h"
+      3          #include "stm32f10x_rcc.h"
+      4          #include "misc.h"
+      5          
+      6          #include "punch_game.h"
+      7          #include "time_game.h"
+      8          #include "shake_game.h"
+      9          #include "common.h"
+     10          
+     11          /*
+     12              C4 button(key1)을 turnButton으로 사용
+     13              D2 led를 turnLed로 사용
+     14          */
+
+   \                                 In section .bss, align 4
+     15          int led_state;
+   \                     led_state:
+   \        0x0                      DS8 4
+     16          
+
+   \                                 In section .text, align 2, keep-with-next
+     17          void turnButton_gpio_Configure(){
+   \                     turnButton_gpio_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     18               GPIO_InitTypeDef button = {
+     19                  .GPIO_Pin = GPIO_Pin_4,
+     20                  .GPIO_Mode = GPIO_Mode_IPU
+     21              };
+   \        0x2   0x....             LDR.N    R0,??DataTable4
+   \        0x4   0x6800             LDR      R0,[R0, #+0]
+   \        0x6   0x9000             STR      R0,[SP, #+0]
+     22              GPIO_Init(GPIOC, &button);
+   \        0x8   0x4669             MOV      R1,SP
+   \        0xA   0x....             LDR.N    R0,??DataTable4_1
+   \        0xC   0x.... 0x....      BL       GPIO_Init
+     23          }
+   \       0x10   0xBD01             POP      {R0,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \        0x0   0x0010             DC16 16
+   \        0x2   0x00 0x48          DC8 0, 72
+
+   \                                 In section .text, align 2, keep-with-next
+     24          void turnButton_exti_Configure(){
+   \                     turnButton_exti_Configure: (+1)
+   \        0x0   0xB5E0             PUSH     {R5-R7,LR}
+     25              GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource4);
+   \        0x2   0x2104             MOVS     R1,#+4
+   \        0x4   0x2002             MOVS     R0,#+2
+   \        0x6   0x.... 0x....      BL       GPIO_EXTILineConfig
+     26              EXTI_InitTypeDef button = {
+     27                  .EXTI_Line = EXTI_Line4,
+     28                  .EXTI_Mode = EXTI_Mode_Interrupt,
+     29                  .EXTI_Trigger = EXTI_Trigger_Falling,
+     30                  .EXTI_LineCmd = ENABLE
+     31              };
+   \        0xA   0x....             LDR.N    R2,??DataTable4_2
+   \        0xC   0xE9D2 0x0100      LDRD     R0,R1,[R2, #+0]
+   \       0x10   0xE9CD 0x0100      STRD     R0,R1,[SP, #+0]
+     32              
+     33              EXTI_Init(&button);
+   \       0x14   0x4668             MOV      R0,SP
+   \       0x16   0x.... 0x....      BL       EXTI_Init
+     34          }
+   \       0x1A   0xBD07             POP      {R0-R2,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_1:
+   \        0x0   0x0000'0010        DC32 16
+   \        0x4   0x00 0x0C          DC8 0, 12, 1
+   \              0x01
+   \        0x7                      DS8 1
+
+   \                                 In section .text, align 2, keep-with-next
+     35          void turnButton_nvic_Configure(){
+   \                     turnButton_nvic_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     36              NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+   \        0x2   0xF44F 0x60E0      MOV      R0,#+1792
+   \        0x6   0x.... 0x....      BL       NVIC_PriorityGroupConfig
+     37              NVIC_InitTypeDef button = {
+     38                  .NVIC_IRQChannel = EXTI4_IRQn,
+     39                  .NVIC_IRQChannelPreemptionPriority = 0x0,
+     40                  .NVIC_IRQChannelSubPriority = 0x0,
+     41                  .NVIC_IRQChannelCmd = ENABLE
+     42              };
+   \        0xA   0x....             LDR.N    R0,??DataTable4_3
+   \        0xC   0x6800             LDR      R0,[R0, #+0]
+   \        0xE   0x9000             STR      R0,[SP, #+0]
+     43              NVIC_Init(&button);
+   \       0x10   0x4668             MOV      R0,SP
+   \       0x12   0x.... 0x....      BL       NVIC_Init
+     44          }
+   \       0x16   0xBD01             POP      {R0,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_2:
+   \        0x0   0x0A 0x00          DC8 10, 0, 0, 1
+   \              0x00 0x01
+     45          
+
+   \                                 In section .text, align 2, keep-with-next
+     46          void turnButton_Button_Configure(){
+   \                     turnButton_Button_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     47              RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+   \        0x2   0x2101             MOVS     R1,#+1
+   \        0x4   0x2010             MOVS     R0,#+16
+   \        0x6   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     48              RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+   \        0xA   0x2101             MOVS     R1,#+1
+   \        0xC   0x2001             MOVS     R0,#+1
+   \        0xE   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     49          
+     50              turnButton_gpio_Configure();
+   \       0x12   0x.... 0x....      BL       turnButton_gpio_Configure
+     51              turnButton_exti_Configure();
+   \       0x16   0x.... 0x....      BL       turnButton_exti_Configure
+     52              turnButton_nvic_Configure();
+   \       0x1A   0x.... 0x....      BL       turnButton_nvic_Configure
+     53          }
+   \       0x1E   0xBD01             POP      {R0,PC}
+
+   \                                 In section .text, align 2, keep-with-next
+     54          void turnLed_Configure(){
+   \                     turnLed_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     55              RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+   \        0x2   0x2101             MOVS     R1,#+1
+   \        0x4   0x2020             MOVS     R0,#+32
+   \        0x6   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     56              GPIO_InitTypeDef led1 = {
+     57                  .GPIO_Pin = GPIO_Pin_2,
+     58                  .GPIO_Mode = GPIO_Mode_Out_PP
+     59              };
+   \        0xA   0x....             LDR.N    R0,??DataTable4_4
+   \        0xC   0x6800             LDR      R0,[R0, #+0]
+   \        0xE   0x9000             STR      R0,[SP, #+0]
+     60              GPIO_Init(GPIOD, &led1);
+   \       0x10   0x4669             MOV      R1,SP
+   \       0x12   0x....             LDR.N    R0,??DataTable4_5
+   \       0x14   0x.... 0x....      BL       GPIO_Init
+     61          
+     62              led_state = 0;
+   \       0x18   0x2100             MOVS     R1,#+0
+   \       0x1A   0x....             LDR.N    R0,??DataTable4_6
+   \       0x1C   0x6001             STR      R1,[R0, #+0]
+     63          }
+   \       0x1E   0xBD01             POP      {R0,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_3:
+   \        0x0   0x0004             DC16 4
+   \        0x2   0x00 0x10          DC8 0, 16
+     64          
+
+   \                                 In section .text, align 2, keep-with-next
+     65          void turnButton_Handler(){
+   \                     turnButton_Handler: (+1)
+   \        0x0   0xB510             PUSH     {R4,LR}
+     66              if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
+   \        0x2   0x2010             MOVS     R0,#+16
+   \        0x4   0x.... 0x....      BL       EXTI_GetITStatus
+   \        0x8   0x2800             CMP      R0,#+0
+   \        0xA   0xD037             BEQ.N    ??turnButton_Handler_0
+     67                  if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == Bit_RESET) {
+   \        0xC   0x2110             MOVS     R1,#+16
+   \        0xE   0x....             LDR.N    R0,??DataTable4_1
+   \       0x10   0x.... 0x....      BL       GPIO_ReadInputDataBit
+   \       0x14   0x2800             CMP      R0,#+0
+   \       0x16   0xD12E             BNE.N    ??turnButton_Handler_1
+     68                      // 현재 게임의 index에 따라, 해당 게임의 turnHandler를 호출
+     69                      switch(cur_game){
+   \       0x18   0x....             LDR.N    R0,??DataTable4_7
+   \       0x1A   0x6800             LDR      R0,[R0, #+0]
+   \       0x1C   0x2800             CMP      R0,#+0
+   \       0x1E   0xD003             BEQ.N    ??turnButton_Handler_2
+   \       0x20   0x2802             CMP      R0,#+2
+   \       0x22   0xD007             BEQ.N    ??turnButton_Handler_3
+   \       0x24   0xD303             BCC.N    ??turnButton_Handler_4
+   \       0x26   0xE008             B.N      ??turnButton_Handler_5
+     70                          case 0: shakeGame_turnHandler(); break;
+   \                     ??turnButton_Handler_2: (+1)
+   \       0x28   0x.... 0x....      BL       shakeGame_turnHandler
+   \       0x2C   0xE005             B.N      ??turnButton_Handler_6
+     71                          case 1: punchGame_turnHandler(); break;
+   \                     ??turnButton_Handler_4: (+1)
+   \       0x2E   0x.... 0x....      BL       punchGame_turnHandler
+   \       0x32   0xE002             B.N      ??turnButton_Handler_6
+     72                          case 2: timeGame_turnHandler();  break;
+   \                     ??turnButton_Handler_3: (+1)
+   \       0x34   0x.... 0x....      BL       timeGame_turnHandler
+   \       0x38   0xE7FF             B.N      ??turnButton_Handler_6
+     73                          default: break;
+     74                      }
+     75                      
+     76                      // 게임 상태 변경
+     77                      game_state = !game_state;
+   \                     ??turnButton_Handler_5: (+1)
+   \                     ??turnButton_Handler_6: (+1)
+   \       0x3A   0x....             LDR.N    R1,??DataTable4_8
+   \       0x3C   0x6808             LDR      R0,[R1, #+0]
+   \       0x3E   0x2800             CMP      R0,#+0
+   \       0x40   0xD102             BNE.N    ??turnButton_Handler_7
+   \       0x42   0x2001             MOVS     R0,#+1
+   \       0x44   0x6008             STR      R0,[R1, #+0]
+   \       0x46   0xE001             B.N      ??turnButton_Handler_8
+   \                     ??turnButton_Handler_7: (+1)
+   \       0x48   0x2000             MOVS     R0,#+0
+   \       0x4A   0x6008             STR      R0,[R1, #+0]
+     78          
+     79                      if(led_state) GPIO_ResetBits(GPIOD, GPIO_Pin_2);
+   \                     ??turnButton_Handler_8: (+1)
+   \       0x4C   0x....             LDR.N    R4,??DataTable4_6
+   \       0x4E   0x6820             LDR      R0,[R4, #+0]
+   \       0x50   0x2800             CMP      R0,#+0
+   \       0x52   0xD004             BEQ.N    ??turnButton_Handler_9
+   \       0x54   0x2104             MOVS     R1,#+4
+   \       0x56   0x....             LDR.N    R0,??DataTable4_5
+   \       0x58   0x.... 0x....      BL       GPIO_ResetBits
+   \       0x5C   0xE003             B.N      ??turnButton_Handler_10
+     80                      else GPIO_SetBits(GPIOD, GPIO_Pin_2);
+   \                     ??turnButton_Handler_9: (+1)
+   \       0x5E   0x2104             MOVS     R1,#+4
+   \       0x60   0x....             LDR.N    R0,??DataTable4_5
+   \       0x62   0x.... 0x....      BL       GPIO_SetBits
+     81                      led_state = !led_state;
+   \                     ??turnButton_Handler_10: (+1)
+   \       0x66   0x6820             LDR      R0,[R4, #+0]
+   \       0x68   0x2800             CMP      R0,#+0
+   \       0x6A   0xD102             BNE.N    ??turnButton_Handler_11
+   \       0x6C   0x2001             MOVS     R0,#+1
+   \       0x6E   0x6020             STR      R0,[R4, #+0]
+   \       0x70   0xE001             B.N      ??turnButton_Handler_1
+   \                     ??turnButton_Handler_11: (+1)
+   \       0x72   0x2000             MOVS     R0,#+0
+   \       0x74   0x6020             STR      R0,[R4, #+0]
+     82                  }
+     83                  EXTI_ClearITPendingBit(EXTI_Line4);
+   \                     ??turnButton_Handler_1: (+1)
+   \       0x76   0x2010             MOVS     R0,#+16
+   \       0x78   0x.... 0x....      BL       EXTI_ClearITPendingBit
+     84              }
+     85          }
+   \                     ??turnButton_Handler_0: (+1)
+   \       0x7C   0xBD10             POP      {R4,PC}
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4:
+   \        0x0   0x....'....        DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_1:
+   \        0x0   0x4001'1000        DC32     0x40011000
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_2:
+   \        0x0   0x....'....        DC32     ?_1
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_3:
+   \        0x0   0x....'....        DC32     ?_2
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_4:
+   \        0x0   0x....'....        DC32     ?_3
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_5:
+   \        0x0   0x4001'1400        DC32     0x40011400
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_6:
+   \        0x0   0x....'....        DC32     led_state
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_7:
+   \        0x0   0x....'....        DC32     cur_game
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_8:
+   \        0x0   0x....'....        DC32     game_state
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   turnButton_Button_Configure
+         8   -> RCC_APB2PeriphClockCmd
+         8   -> turnButton_exti_Configure
+         8   -> turnButton_gpio_Configure
+         8   -> turnButton_nvic_Configure
+       8   turnButton_Handler
+         8   -> EXTI_ClearITPendingBit
+         8   -> EXTI_GetITStatus
+         8   -> GPIO_ReadInputDataBit
+         8   -> GPIO_ResetBits
+         8   -> GPIO_SetBits
+         8   -> punchGame_turnHandler
+         8   -> shakeGame_turnHandler
+         8   -> timeGame_turnHandler
+      16   turnButton_exti_Configure
+        16   -> EXTI_Init
+        16   -> GPIO_EXTILineConfig
+       8   turnButton_gpio_Configure
+         8   -> GPIO_Init
+       8   turnButton_nvic_Configure
+         8   -> NVIC_Init
+         8   -> NVIC_PriorityGroupConfig
+       8   turnLed_Configure
+         8   -> GPIO_Init
+         8   -> RCC_APB2PeriphClockCmd
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_2
+       4  ??DataTable4_3
+       4  ??DataTable4_4
+       4  ??DataTable4_5
+       4  ??DataTable4_6
+       4  ??DataTable4_7
+       4  ??DataTable4_8
+       4  ?_0
+       8  ?_1
+       4  ?_2
+       4  ?_3
+       4  led_state
+      32  turnButton_Button_Configure
+     126  turnButton_Handler
+      28  turnButton_exti_Configure
+      18  turnButton_gpio_Configure
+      24  turnButton_nvic_Configure
+      32  turnLed_Configure
+
+ 
+   4 bytes in section .bss
+  20 bytes in section .rodata
+ 296 bytes in section .text
+ 
+ 296 bytes of CODE  memory
+  20 bytes of CONST memory
+   4 bytes of DATA  memory
+
+Errors: none
+Warnings: none

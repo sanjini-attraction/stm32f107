@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BuildDb>
+    <Tool>
+        <Name>linker</Name>
+        <Parent>
+            <Path>C:\stm32f107\test\stm32f107\Debug\Exe\week3.out</Path>
+            <Output>
+                <Path>C:\stm32f107\test\stm32f107\Debug\List\week3.map</Path>
+            </Output>
+            <Output>
+                <Path>C:\stm32f107\test\stm32f107\Debug\List\week3.log</Path>
+            </Output>
+        </Parent>
+    </Tool>
+    <Tool>
+        <Name>compiler</Name>
+        <Parent>
+            <Path>C:\stm32f107\test\stm32f107\user\src\common.c</Path>
+            <Output>
+                <Path>C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir\common.lst</Path>
+            </Output>
+        </Parent>
+    </Tool>
+</BuildDb>

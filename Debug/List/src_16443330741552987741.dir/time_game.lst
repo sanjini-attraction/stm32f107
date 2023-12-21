@@ -1,0 +1,676 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V9.50.1.380/W64 for ARM         21/Dec/2023  20:16:30
+# Copyright 1999-2023 IAR Systems AB.
+#
+#    Cpu mode          =  thumb
+#    Endian            =  little
+#    Source file       =  C:\stm32f107\test\stm32f107\user\src\time_game.c
+#    Command line      =
+#        -f
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\time_game.o.rsp
+#        (C:\stm32f107\test\stm32f107\user\src\time_game.c -D
+#        USE_STDPERIPH_DRIVER -D STM32F10X_CL -lC
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir -o
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\Startup\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\inc\
+#        -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\src\
+#        -I C:\stm32f107\test\stm32f107\user\ -I
+#        C:\stm32f107\test\stm32f107\user\inc\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\LCD\ -I
+#        C:\stm32f107\test\stm32f107\user\src\ -Ol -I "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\CMSIS\Core\Include\\")
+#        --dependencies=n
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\time_game.o.iar_deps
+#    Locale            =  C
+#    List file         =
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir\time_game.lst
+#    Object file       =
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\time_game.o
+#    Runtime model:       
+#      __CPP_Runtime   =  1
+#      __SystemLibrary =  DLib
+#      __dlib_version  =  6
+#
+###############################################################################
+
+C:\stm32f107\test\stm32f107\user\src\time_game.c
+      1          #include "stm32f10x_gpio.h"
+      2          #include "stm32f10x_exti.h"
+      3          #include "stm32f10x_tim.h"
+      4          #include "stm32f10x_rcc.h"
+      5          #include "misc.h"
+      6          
+      7          #include "time_game.h"
+      8          #include "common.h"
+      9          
+     10          /*
+     11              Touch Sensor: PA1
+     12              Timer2: 10Hz
+     13          */
+
+   \                                 In section .bss, align 4
+     14          int time_count, timer_running;
+   \                     time_count:
+   \        0x0                      DS8 4
+
+   \                                 In section .bss, align 4
+   \                     timer_running:
+   \        0x0                      DS8 4
+     15          
+     16          /* -----------     Configure     ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+     17          void touch_exti_Configure(){
+   \                     touch_exti_Configure: (+1)
+   \        0x0   0xB5E0             PUSH     {R5-R7,LR}
+     18              GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+   \        0x2   0x2101             MOVS     R1,#+1
+   \        0x4   0x2000             MOVS     R0,#+0
+   \        0x6   0x.... 0x....      BL       GPIO_EXTILineConfig
+     19              EXTI_InitTypeDef touch = {
+     20                  .EXTI_Line = EXTI_Line1,
+     21                  .EXTI_Mode = EXTI_Mode_Interrupt,
+     22                  .EXTI_Trigger = EXTI_Trigger_Falling,
+     23                  .EXTI_LineCmd = ENABLE
+     24              };
+   \        0xA   0x....             LDR.N    R2,??DataTable8
+   \        0xC   0xE9D2 0x0100      LDRD     R0,R1,[R2, #+0]
+   \       0x10   0xE9CD 0x0100      STRD     R0,R1,[SP, #+0]
+     25              
+     26              EXTI_Init(&touch);
+   \       0x14   0x4668             MOV      R0,SP
+   \       0x16   0x.... 0x....      BL       EXTI_Init
+     27          }
+   \       0x1A   0xBD07             POP      {R0-R2,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_5:
+   \        0x0   0x0000'0002        DC32 2
+   \        0x4   0x00 0x0C          DC8 0, 12, 1
+   \              0x01
+   \        0x7                      DS8 1
+
+   \                                 In section .text, align 2, keep-with-next
+     28          void touch_gpio_Configure(){
+   \                     touch_gpio_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     29              GPIO_InitTypeDef touch = {
+     30                  .GPIO_Pin = GPIO_Pin_1,
+     31                  .GPIO_Mode = GPIO_Mode_IPU
+     32              };
+   \        0x2   0x....             LDR.N    R0,??DataTable8_1
+   \        0x4   0x6800             LDR      R0,[R0, #+0]
+   \        0x6   0x9000             STR      R0,[SP, #+0]
+     33              GPIO_Init(GPIOA, &touch);
+   \        0x8   0x4669             MOV      R1,SP
+   \        0xA   0x....             LDR.N    R0,??DataTable8_2
+   \        0xC   0x.... 0x....      BL       GPIO_Init
+     34          }
+   \       0x10   0xBD01             POP      {R0,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_6:
+   \        0x0   0x0002             DC16 2
+   \        0x2   0x00 0x48          DC8 0, 72
+
+   \                                 In section .text, align 2, keep-with-next
+     35          void touch_nvic_Configure(){
+   \                     touch_nvic_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     36              NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+   \        0x2   0xF44F 0x60E0      MOV      R0,#+1792
+   \        0x6   0x.... 0x....      BL       NVIC_PriorityGroupConfig
+     37              NVIC_InitTypeDef touch = {
+     38                  .NVIC_IRQChannel = EXTI1_IRQn,
+     39                  .NVIC_IRQChannelPreemptionPriority = 0x0,
+     40                  .NVIC_IRQChannelSubPriority = 0x0,
+     41                  .NVIC_IRQChannelCmd = ENABLE
+     42              };
+   \        0xA   0x....             LDR.N    R0,??DataTable8_3
+   \        0xC   0x6800             LDR      R0,[R0, #+0]
+   \        0xE   0x9000             STR      R0,[SP, #+0]
+     43              NVIC_Init(&touch);
+   \       0x10   0x4668             MOV      R0,SP
+   \       0x12   0x.... 0x....      BL       NVIC_Init
+     44          }
+   \       0x16   0xBD01             POP      {R0,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_7:
+   \        0x0   0x07 0x00          DC8 7, 0, 0, 1
+   \              0x00 0x01
+
+   \                                 In section .text, align 2, keep-with-next
+     45          void timer_Configure(){
+   \                     timer_Configure: (+1)
+   \        0x0   0xB51F             PUSH     {R0-R4,LR}
+     46              TIM_TimeBaseInitTypeDef timer2 = {
+     47                  // 1Hz = 72MHz / TIM_Prescaler / TIM_Period = 72MHz / 10k / 7200
+     48                  .TIM_Prescaler = (uint16_t) (SystemCoreClock / 10000)-1,
+     49                  .TIM_CounterMode = TIM_CounterMode_Up,
+     50                  .TIM_Period = 10000-1,
+     51                  .TIM_ClockDivision = 0,
+     52              };
+   \        0x2   0x466C             MOV      R4,SP
+   \        0x4   0x....             LDR.N    R0,??DataTable8_4
+   \        0x6   0xE890 0x000E      LDM      R0,{R1-R3}
+   \        0xA   0xE884 0x000E      STM      R4,{R1-R3}
+   \        0xE   0x....             LDR.N    R0,??DataTable8_5
+   \       0x10   0x6801             LDR      R1,[R0, #+0]
+   \       0x12   0xF242 0x7010      MOVW     R0,#+10000
+   \       0x16   0xFBB1 0xF0F0      UDIV     R0,R1,R0
+   \       0x1A   0x1E40             SUBS     R0,R0,#+1
+   \       0x1C   0xF8AD 0x0000      STRH     R0,[SP, #+0]
+     53              TIM_TimeBaseInit(TIM2, &timer2);
+   \       0x20   0x4669             MOV      R1,SP
+   \       0x22   0xF05F 0x4080      MOVS     R0,#+1073741824
+   \       0x26   0x.... 0x....      BL       TIM_TimeBaseInit
+     54              TIM_ARRPreloadConfig(TIM2, ENABLE);
+   \       0x2A   0x2101             MOVS     R1,#+1
+   \       0x2C   0xF05F 0x4080      MOVS     R0,#+1073741824
+   \       0x30   0x.... 0x....      BL       TIM_ARRPreloadConfig
+     55          }
+   \       0x34   0xBD1F             POP      {R0-R4,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_8:
+   \        0x0   0x0000 0x0000      DC16 0, 0, 9'999, 0
+   \               0x270F 0x000
+   \              0
+   \        0x8                      DS8 2
+   \        0xA                      DS8 2
+
+   \                                 In section .text, align 2, keep-with-next
+     56          void timer_interrupt_Configure(){
+   \                     timer_interrupt_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     57              TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+   \        0x2   0x2201             MOVS     R2,#+1
+   \        0x4   0x2101             MOVS     R1,#+1
+   \        0x6   0xF05F 0x4080      MOVS     R0,#+1073741824
+   \        0xA   0x.... 0x....      BL       TIM_ITConfig
+     58          }
+   \        0xE   0xBD01             POP      {R0,PC}
+
+   \                                 In section .text, align 2, keep-with-next
+     59          void timer_nvic_Configure(){
+   \                     timer_nvic_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     60              NVIC_InitTypeDef timer2 = {
+     61                  .NVIC_IRQChannel = TIM2_IRQn,
+     62                  .NVIC_IRQChannelPreemptionPriority = 0x0,
+     63                  .NVIC_IRQChannelSubPriority = 0x0,
+     64                  .NVIC_IRQChannelCmd = ENABLE
+     65              };
+   \        0x2   0x....             LDR.N    R0,??DataTable8_6
+   \        0x4   0x6800             LDR      R0,[R0, #+0]
+   \        0x6   0x9000             STR      R0,[SP, #+0]
+     66              NVIC_Init(&timer2);
+   \        0x8   0x4668             MOV      R0,SP
+   \        0xA   0x.... 0x....      BL       NVIC_Init
+     67          }
+   \        0xE   0xBD01             POP      {R0,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_9:
+   \        0x0   0x1C 0x00          DC8 28, 0, 0, 1
+   \              0x00 0x01
+     68          
+
+   \                                 In section .text, align 2, keep-with-next
+     69          void timeGame_Configure(){
+   \                     timeGame_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     70              // RCC Configure
+     71              RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); // KEY4(PA0)
+   \        0x2   0x2101             MOVS     R1,#+1
+   \        0x4   0x2004             MOVS     R0,#+4
+   \        0x6   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     72              RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+   \        0xA   0x2101             MOVS     R1,#+1
+   \        0xC   0x2001             MOVS     R0,#+1
+   \        0xE   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     73              RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+   \       0x12   0x2101             MOVS     R1,#+1
+   \       0x14   0x2001             MOVS     R0,#+1
+   \       0x16   0x.... 0x....      BL       RCC_APB1PeriphClockCmd
+     74          
+     75              // Touch Sensor Configure
+     76              touch_gpio_Configure();
+   \       0x1A   0x.... 0x....      BL       touch_gpio_Configure
+     77              touch_exti_Configure();
+   \       0x1E   0x.... 0x....      BL       touch_exti_Configure
+     78              touch_nvic_Configure();
+   \       0x22   0x.... 0x....      BL       touch_nvic_Configure
+     79          
+     80              // Timer2 Configure
+     81              timer_Configure();
+   \       0x26   0x.... 0x....      BL       timer_Configure
+     82              timer_interrupt_Configure();
+   \       0x2A   0x.... 0x....      BL       timer_interrupt_Configure
+     83              timer_nvic_Configure();
+   \       0x2E   0x.... 0x....      BL       timer_nvic_Configure
+     84          }
+   \       0x32   0xBD01             POP      {R0,PC}
+     85          
+     86          
+     87          /* ----------- Interrupt Handler ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+     88          void timeGame_TimerHandler(){
+   \                     timeGame_TimerHandler: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     89              if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+   \        0x2   0x2101             MOVS     R1,#+1
+   \        0x4   0xF05F 0x4080      MOVS     R0,#+1073741824
+   \        0x8   0x.... 0x....      BL       TIM_GetITStatus
+   \        0xC   0x2800             CMP      R0,#+0
+   \        0xE   0xD003             BEQ.N    ??timeGame_TimerHandler_0
+     90                  time_count++;
+   \       0x10   0x....             LDR.N    R1,??DataTable8_7
+   \       0x12   0x6808             LDR      R0,[R1, #+0]
+   \       0x14   0x1C40             ADDS     R0,R0,#+1
+   \       0x16   0x6008             STR      R0,[R1, #+0]
+     91          
+     92              printf("timer = %d\n", time_count);
+                     ^
+Warning[Pe223]: function "printf" declared implicitly
+   \                     ??timeGame_TimerHandler_0: (+1)
+   \       0x18   0x....             LDR.N    R0,??DataTable8_7
+   \       0x1A   0x6801             LDR      R1,[R0, #+0]
+   \       0x1C   0x....             LDR.N    R0,??DataTable8_8
+   \       0x1E   0x.... 0x....      BL       printf
+     93              TIM_ClearITPendingBit(TIM2, TIM_IT_Update); 
+   \       0x22   0x2101             MOVS     R1,#+1
+   \       0x24   0xF05F 0x4080      MOVS     R0,#+1073741824
+   \       0x28   0x.... 0x....      BL       TIM_ClearITPendingBit
+     94          }
+   \       0x2C   0xBD01             POP      {R0,PC}
+     95          
+
+   \                                 In section .text, align 2, keep-with-next
+     96          void timeGame_TouchHandler(){
+   \                     timeGame_TouchHandler: (+1)
+   \        0x0   0xB510             PUSH     {R4,LR}
+     97              if (EXTI_GetITStatus(EXTI_Line1) != RESET) {
+   \        0x2   0x2002             MOVS     R0,#+2
+   \        0x4   0x.... 0x....      BL       EXTI_GetITStatus
+   \        0x8   0x2800             CMP      R0,#+0
+   \        0xA   0xD01F             BEQ.N    ??timeGame_TouchHandler_0
+     98                  if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) == Bit_RESET) {
+   \        0xC   0x2102             MOVS     R1,#+2
+   \        0xE   0x....             LDR.N    R0,??DataTable8_2
+   \       0x10   0x.... 0x....      BL       GPIO_ReadInputDataBit
+   \       0x14   0x2800             CMP      R0,#+0
+   \       0x16   0xD116             BNE.N    ??timeGame_TouchHandler_1
+     99                      // 계속 timer interrupt가 발생할 필요 X
+    100                      // Touch Sensor가 눌렸을 때, timer 상태에 따라 timer를 시작하거나 멈춤
+    101                      if(timer_running == 0)
+   \       0x18   0x....             LDR.N    R4,??DataTable8_9
+   \       0x1A   0x6820             LDR      R0,[R4, #+0]
+   \       0x1C   0x2800             CMP      R0,#+0
+   \       0x1E   0xD105             BNE.N    ??timeGame_TouchHandler_2
+    102                          TIM_Cmd(TIM2, ENABLE);
+   \       0x20   0x2101             MOVS     R1,#+1
+   \       0x22   0xF05F 0x4080      MOVS     R0,#+1073741824
+   \       0x26   0x.... 0x....      BL       TIM_Cmd
+   \       0x2A   0xE004             B.N      ??timeGame_TouchHandler_3
+    103                      else TIM_Cmd(TIM2, DISABLE);
+   \                     ??timeGame_TouchHandler_2: (+1)
+   \       0x2C   0x2100             MOVS     R1,#+0
+   \       0x2E   0xF05F 0x4080      MOVS     R0,#+1073741824
+   \       0x32   0x.... 0x....      BL       TIM_Cmd
+    104          
+    105                      timer_running = !timer_running;
+   \                     ??timeGame_TouchHandler_3: (+1)
+   \       0x36   0x6820             LDR      R0,[R4, #+0]
+   \       0x38   0x2800             CMP      R0,#+0
+   \       0x3A   0xD102             BNE.N    ??timeGame_TouchHandler_4
+   \       0x3C   0x2001             MOVS     R0,#+1
+   \       0x3E   0x6020             STR      R0,[R4, #+0]
+   \       0x40   0xE001             B.N      ??timeGame_TouchHandler_1
+   \                     ??timeGame_TouchHandler_4: (+1)
+   \       0x42   0x2000             MOVS     R0,#+0
+   \       0x44   0x6020             STR      R0,[R4, #+0]
+    106                  }
+    107                  EXTI_ClearITPendingBit(EXTI_Line1);
+   \                     ??timeGame_TouchHandler_1: (+1)
+   \       0x46   0x2002             MOVS     R0,#+2
+   \       0x48   0x.... 0x....      BL       EXTI_ClearITPendingBit
+    108              }
+    109          } 
+   \                     ??timeGame_TouchHandler_0: (+1)
+   \       0x4C   0xBD10             POP      {R4,PC}
+    110          
+    111          /* -----------    Game Control   ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+    112          void timeGame_turnHandler(){
+   \                     timeGame_turnHandler: (+1)
+   \        0x0   0xB538             PUSH     {R3-R5,LR}
+    113              if(game_state == 0){  // 턴 시작
+   \        0x2   0x....             LDR.N    R0,??DataTable8_10
+   \        0x4   0x6800             LDR      R0,[R0, #+0]
+   \        0x6   0x2800             CMP      R0,#+0
+   \        0x8   0xD10E             BNE.N    ??timeGame_turnHandler_0
+    114                  printf("turn begin\n");
+                         ^
+Warning[Pe223]: function "printf" declared implicitly
+   \        0xA   0x....             LDR.N    R0,??DataTable8_11
+   \        0xC   0x.... 0x....      BL       printf
+    115                  time_count = 0;
+   \       0x10   0x2100             MOVS     R1,#+0
+   \       0x12   0x....             LDR.N    R0,??DataTable8_7
+   \       0x14   0x6001             STR      R1,[R0, #+0]
+    116                  timer_running = 0;
+   \       0x16   0x2100             MOVS     R1,#+0
+   \       0x18   0x....             LDR.N    R0,??DataTable8_9
+   \       0x1A   0x6001             STR      R1,[R0, #+0]
+    117                  TIM_Cmd(TIM2, DISABLE);
+   \       0x1C   0x2100             MOVS     R1,#+0
+   \       0x1E   0xF05F 0x4080      MOVS     R0,#+1073741824
+   \       0x22   0x.... 0x....      BL       TIM_Cmd
+   \       0x26   0xE016             B.N      ??timeGame_turnHandler_1
+    118              }
+    119              else{ // 턴 종료
+    120                  printf("turn end / %d player time = %d\n", cur_player, time_count);
+                         ^
+Warning[Pe223]: function "printf" declared implicitly
+   \                     ??timeGame_turnHandler_0: (+1)
+   \       0x28   0x....             LDR.N    R4,??DataTable8_12
+   \       0x2A   0x....             LDR.N    R5,??DataTable8_7
+   \       0x2C   0x682A             LDR      R2,[R5, #+0]
+   \       0x2E   0x6821             LDR      R1,[R4, #+0]
+   \       0x30   0x....             LDR.N    R0,??DataTable8_13
+   \       0x32   0x.... 0x....      BL       printf
+    121                  values[cur_player] = time_count; // 기록 저장
+   \       0x36   0x682A             LDR      R2,[R5, #+0]
+   \       0x38   0x....             LDR.N    R1,??DataTable8_14
+   \       0x3A   0x6820             LDR      R0,[R4, #+0]
+   \       0x3C   0xF841 0x2020      STR      R2,[R1, R0, LSL #+2]
+    122                  cur_player++;
+   \       0x40   0x6820             LDR      R0,[R4, #+0]
+   \       0x42   0x1C40             ADDS     R0,R0,#+1
+   \       0x44   0x6020             STR      R0,[R4, #+0]
+    123          
+    124                  if(cur_player == player_count)
+   \       0x46   0x6820             LDR      R0,[R4, #+0]
+   \       0x48   0x....             LDR.N    R1,??DataTable8_15
+   \       0x4A   0x6809             LDR      R1,[R1, #+0]
+   \       0x4C   0x4288             CMP      R0,R1
+   \       0x4E   0xD102             BNE.N    ??timeGame_turnHandler_1
+    125                      allTurnEnd = 1;        
+   \       0x50   0x2101             MOVS     R1,#+1
+   \       0x52   0x....             LDR.N    R0,??DataTable8_16
+   \       0x54   0x6001             STR      R1,[R0, #+0]
+    126              }
+    127          }
+   \                     ??timeGame_turnHandler_1: (+1)
+   \       0x56   0xBD31             POP      {R0,R4,R5,PC}
+
+   \                                 In section .text, align 2, keep-with-next
+    128          void timeGame(){
+   \                     timeGame: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+    129              printf("in timeGame\n");
+                     ^
+Warning[Pe223]: function "printf" declared implicitly
+   \        0x2   0x....             LDR.N    R0,??DataTable8_17
+   \        0x4   0x.... 0x....      BL       printf
+    130              while(!allTurnEnd);
+   \                     ??timeGame_0: (+1)
+   \        0x8   0x....             LDR.N    R0,??DataTable8_16
+   \        0xA   0x6800             LDR      R0,[R0, #+0]
+   \        0xC   0x2800             CMP      R0,#+0
+   \        0xE   0xD0FB             BEQ.N    ??timeGame_0
+    131              printf("timeGame ended\n");
+   \       0x10   0x....             LDR.N    R0,??DataTable8_18
+   \       0x12   0x.... 0x....      BL       printf
+    132          }
+   \       0x16   0xBD01             POP      {R0,PC}
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8:
+   \        0x0   0x....'....        DC32     ?_5
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_1:
+   \        0x0   0x....'....        DC32     ?_6
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_2:
+   \        0x0   0x4001'0800        DC32     0x40010800
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_3:
+   \        0x0   0x....'....        DC32     ?_7
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_4:
+   \        0x0   0x....'....        DC32     ?_8
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_5:
+   \        0x0   0x....'....        DC32     SystemCoreClock
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_6:
+   \        0x0   0x....'....        DC32     ?_9
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_7:
+   \        0x0   0x....'....        DC32     time_count
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_8:
+   \        0x0   0x....'....        DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_9:
+   \        0x0   0x....'....        DC32     timer_running
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_10:
+   \        0x0   0x....'....        DC32     game_state
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_11:
+   \        0x0   0x....'....        DC32     ?_1
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_12:
+   \        0x0   0x....'....        DC32     cur_player
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_13:
+   \        0x0   0x....'....        DC32     ?_2
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_14:
+   \        0x0   0x....'....        DC32     values
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_15:
+   \        0x0   0x....'....        DC32     player_count
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_16:
+   \        0x0   0x....'....        DC32     allTurnEnd
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_17:
+   \        0x0   0x....'....        DC32     ?_3
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable8_18:
+   \        0x0   0x....'....        DC32     ?_4
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \        0x0   0x74 0x69          DC8 "timer = %d\012"
+   \              0x6D 0x65    
+   \              0x72 0x20    
+   \              0x3D 0x20    
+   \              0x25 0x64    
+   \              0x0A 0x00
+
+   \                                 In section .rodata, align 4
+   \                     ?_1:
+   \        0x0   0x74 0x75          DC8 "turn begin\012"
+   \              0x72 0x6E    
+   \              0x20 0x62    
+   \              0x65 0x67    
+   \              0x69 0x6E    
+   \              0x0A 0x00
+
+   \                                 In section .rodata, align 4
+   \                     ?_2:
+   \        0x0   0x74 0x75          DC8 "turn end / %d player time = %d\012"
+   \              0x72 0x6E    
+   \              0x20 0x65    
+   \              0x6E 0x64    
+   \              0x20 0x2F    
+   \              0x20 0x25    
+   \              0x64 0x20    
+   \              0x70 0x6C    
+   \              0x61 0x79    
+   \              0x65 0x72    
+   \              0x20 0x74    
+   \              0x69 0x6D    
+   \              0x65 0x20    
+   \              0x3D 0x20    
+   \              0x25 0x64    
+   \              0x0A 0x00
+
+   \                                 In section .rodata, align 4
+   \                     ?_3:
+   \        0x0   0x69 0x6E          DC8 "in timeGame\012"
+   \              0x20 0x74    
+   \              0x69 0x6D    
+   \              0x65 0x47    
+   \              0x61 0x6D    
+   \              0x65 0x0A    
+   \              0x00
+   \        0xD                      DS8 3
+
+   \                                 In section .rodata, align 4
+   \                     ?_4:
+   \        0x0   0x74 0x69          DC8 "timeGame ended\012"
+   \              0x6D 0x65    
+   \              0x47 0x61    
+   \              0x6D 0x65    
+   \              0x20 0x65    
+   \              0x6E 0x64    
+   \              0x65 0x64    
+   \              0x0A 0x00
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   timeGame
+         8   -> printf
+       8   timeGame_Configure
+         8   -> RCC_APB1PeriphClockCmd
+         8   -> RCC_APB2PeriphClockCmd
+         8   -> timer_Configure
+         8   -> timer_interrupt_Configure
+         8   -> timer_nvic_Configure
+         8   -> touch_exti_Configure
+         8   -> touch_gpio_Configure
+         8   -> touch_nvic_Configure
+       8   timeGame_TimerHandler
+         8   -> TIM_ClearITPendingBit
+         8   -> TIM_GetITStatus
+         8   -> printf
+       8   timeGame_TouchHandler
+         8   -> EXTI_ClearITPendingBit
+         8   -> EXTI_GetITStatus
+         8   -> GPIO_ReadInputDataBit
+         8   -> TIM_Cmd
+      16   timeGame_turnHandler
+        16   -> TIM_Cmd
+        16   -> printf
+      24   timer_Configure
+        24   -> TIM_ARRPreloadConfig
+        24   -> TIM_TimeBaseInit
+       8   timer_interrupt_Configure
+         8   -> TIM_ITConfig
+       8   timer_nvic_Configure
+         8   -> NVIC_Init
+      16   touch_exti_Configure
+        16   -> EXTI_Init
+        16   -> GPIO_EXTILineConfig
+       8   touch_gpio_Configure
+         8   -> GPIO_Init
+       8   touch_nvic_Configure
+         8   -> NVIC_Init
+         8   -> NVIC_PriorityGroupConfig
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable8
+       4  ??DataTable8_1
+       4  ??DataTable8_10
+       4  ??DataTable8_11
+       4  ??DataTable8_12
+       4  ??DataTable8_13
+       4  ??DataTable8_14
+       4  ??DataTable8_15
+       4  ??DataTable8_16
+       4  ??DataTable8_17
+       4  ??DataTable8_18
+       4  ??DataTable8_2
+       4  ??DataTable8_3
+       4  ??DataTable8_4
+       4  ??DataTable8_5
+       4  ??DataTable8_6
+       4  ??DataTable8_7
+       4  ??DataTable8_8
+       4  ??DataTable8_9
+      12  ?_0
+      12  ?_1
+      32  ?_2
+      16  ?_3
+      16  ?_4
+       8  ?_5
+       4  ?_6
+       4  ?_7
+      12  ?_8
+       4  ?_9
+      24  timeGame
+      52  timeGame_Configure
+      46  timeGame_TimerHandler
+      78  timeGame_TouchHandler
+      88  timeGame_turnHandler
+       4  time_count
+      54  timer_Configure
+      16  timer_interrupt_Configure
+      16  timer_nvic_Configure
+       4  timer_running
+      28  touch_exti_Configure
+      18  touch_gpio_Configure
+      24  touch_nvic_Configure
+
+ 
+   8 bytes in section .bss
+ 120 bytes in section .rodata
+ 520 bytes in section .text
+ 
+ 520 bytes of CODE  memory
+ 120 bytes of CONST memory
+   8 bytes of DATA  memory
+
+Errors: none
+Warnings: 4

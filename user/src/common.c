@@ -12,6 +12,8 @@
     C4 button(key1)을 turnButton으로 사용
     D2 led를 turnLed로 사용
 */
+int led_state;
+
 
 void turnButton_gpio_Configure(){
      GPIO_InitTypeDef button = {
@@ -51,11 +53,12 @@ void turnButton_Button_Configure(){
     turnButton_nvic_Configure();
 }
 void turnLed_Configure(){
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
     GPIO_InitTypeDef led1 = {
         .GPIO_Pin = GPIO_Pin_2,
         .GPIO_Mode = GPIO_Mode_Out_PP
     };
-    GPIO_Init(GPIOC, &led1);
+    GPIO_Init(GPIOD, &led1);
 
     led_state = 0;
 }
@@ -74,8 +77,8 @@ void turnButton_Handler(){
             // 게임 상태 변경
             game_state = !game_state;
 
-            if(led_state) GPIO_ResetBits(GPIOC, GPIO_Pin_2);
-            else GPIO_SetBits(GPIOC, GPIO_Pin_2);
+            if(led_state) GPIO_ResetBits(GPIOD, GPIO_Pin_2);
+            else GPIO_SetBits(GPIOD, GPIO_Pin_2);
             led_state = !led_state;
         }
         EXTI_ClearITPendingBit(EXTI_Line4);

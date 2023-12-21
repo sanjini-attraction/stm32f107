@@ -107,14 +107,16 @@ void punchGame(){
     
 	while(!allTurnEnd){
 		while(game_state == 1){  // 플레이어의 턴일 때만 로직을 실행
-		// 압력 센서가 많이 민감하기 때문에, 100~400 사이의 값만 활용
-        punch_pressure = ADC_Value > 400 ? 400 : (ADC_Value < 100) ? 100 : ADC_Value;
+		// 압력 센서가 많이 민감하기 때문에, 100~600 사이의 값만 활용
+        punch_pressure = ADC_Value;
+        printf("%d\n",ADC_Value);
+        punch_pressure = punch_pressure > 600 ? 600 : (punch_pressure < 100) ? 100 : punch_pressure;
 		// 압력 센서의 값을 1~100 사이의 값으로 변환
-        mappedValue = mapping(punch_pressure, 100, 400, 1, 100);
+        mappedValue = mapping(punch_pressure, 100, 600, 1, 100);
 
 		if(mappedValue > max_mappedValue)
 			max_mappedValue = mappedValue;
 		}
 	}
-	printf("punchGame end\n")
+	printf("punchGame end\n");
 }

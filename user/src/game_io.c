@@ -114,6 +114,7 @@ void sendMessage() {
     for(int i=0; i<player_count; i++){
         USART_SendData(USART2, values[i]);
         for(int i=0; i<2000000; i++); // delay
+        // while((USART2->SR & USART_SR_TC) == 0);
     }
 
     USART_SendData(USART2, 1000);

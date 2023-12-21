@@ -1,0 +1,604 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V9.50.1.380/W64 for ARM         21/Dec/2023  20:29:46
+# Copyright 1999-2023 IAR Systems AB.
+#
+#    Cpu mode          =  thumb
+#    Endian            =  little
+#    Source file       =  C:\stm32f107\test\stm32f107\user\src\punch_game.c
+#    Command line      =
+#        -f
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\punch_game.o.rsp
+#        (C:\stm32f107\test\stm32f107\user\src\punch_game.c -D
+#        USE_STDPERIPH_DRIVER -D STM32F10X_CL -lC
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir -o
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\Startup\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\inc\
+#        -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\src\
+#        -I C:\stm32f107\test\stm32f107\user\ -I
+#        C:\stm32f107\test\stm32f107\user\inc\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\LCD\ -I
+#        C:\stm32f107\test\stm32f107\user\src\ -Ol -I "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\CMSIS\Core\Include\\")
+#        --dependencies=n
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\punch_game.o.iar_deps
+#    Locale            =  C
+#    List file         =
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir\punch_game.lst
+#    Object file       =
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\punch_game.o
+#    Runtime model:       
+#      __CPP_Runtime   =  1
+#      __SystemLibrary =  DLib
+#      __dlib_version  =  6
+#
+###############################################################################
+
+C:\stm32f107\test\stm32f107\user\src\punch_game.c
+      1          #include "stm32f10x_adc.h"
+      2          #include "stm32f10x_exti.h"
+      3          #include "stm32f10x_rcc.h"
+      4          #include "stm32f10x_gpio.h"
+      5          #include "stm32f10x_usart.h"
+      6          #include "stm32f10x_dma.h"
+      7          #include "misc.h"
+      8          
+      9          #include "common.h"
+     10          #include "punch_game.h"
+     11          
+     12          
+     13          /*
+     14          	ADC1: PB0
+     15          	DMA1: ADC1 -> ADC_Value
+     16          
+     17          	max_mappedValue: 현재 진행중인 플레이어의 최대값
+     18          */
+
+   \                                 In section .bss, align 4
+     19          volatile uint32_t ADC_Value;
+   \                     ADC_Value:
+   \        0x0                      DS8 4
+
+   \                                 In section .bss, align 4
+     20          int max_mappedValue = 0;
+   \                     max_mappedValue:
+   \        0x0                      DS8 4
+     21          
+     22          /* -----------     Configure     ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+     23          void RccInit(void) {
+   \                     RccInit: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     24            RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+   \        0x2   0x2101             MOVS     R1,#+1
+   \        0x4   0x2001             MOVS     R0,#+1
+   \        0x6   0x.... 0x....      BL       RCC_AHBPeriphClockCmd
+     25            RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+   \        0xA   0x2101             MOVS     R1,#+1
+   \        0xC   0xF44F 0x7000      MOV      R0,#+512
+   \       0x10   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     26            RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+   \       0x14   0x2101             MOVS     R1,#+1
+   \       0x16   0x2008             MOVS     R0,#+8
+   \       0x18   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     27          }
+   \       0x1C   0xBD01             POP      {R0,PC}
+     28          
+
+   \                                 In section .text, align 2, keep-with-next
+     29          void GpioInit(void) {
+   \                     GpioInit: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     30            GPIO_InitTypeDef GPIO_InitStructure;
+     31            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+   \        0x2   0x2001             MOVS     R0,#+1
+   \        0x4   0xF8AD 0x0000      STRH     R0,[SP, #+0]
+     32            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+   \        0x8   0x2000             MOVS     R0,#+0
+   \        0xA   0xF88D 0x0003      STRB     R0,[SP, #+3]
+     33            GPIO_Init(GPIOB, &GPIO_InitStructure);
+   \        0xE   0x4669             MOV      R1,SP
+   \       0x10   0x....             LDR.N    R0,??DataTable5_1
+   \       0x12   0x.... 0x....      BL       GPIO_Init
+     34          }
+   \       0x16   0xBD01             POP      {R0,PC}
+     35          
+
+   \                                 In section .text, align 2, keep-with-next
+     36          void AdcInit(void) {
+   \                     AdcInit: (+1)
+   \        0x0   0xB518             PUSH     {R3,R4,LR}
+   \        0x2   0xB085             SUB      SP,SP,#+20
+     37            ADC_InitTypeDef ADC_InitStructure;
+     38            ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
+   \        0x4   0x2000             MOVS     R0,#+0
+   \        0x6   0x9000             STR      R0,[SP, #+0]
+     39            ADC_InitStructure.ADC_ScanConvMode = DISABLE;
+   \        0x8   0x2000             MOVS     R0,#+0
+   \        0xA   0xF88D 0x0004      STRB     R0,[SP, #+4]
+     40            ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+   \        0xE   0x2001             MOVS     R0,#+1
+   \       0x10   0xF88D 0x0005      STRB     R0,[SP, #+5]
+     41            ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+   \       0x14   0xF45F 0x2060      MOVS     R0,#+917504
+   \       0x18   0x9002             STR      R0,[SP, #+8]
+     42            ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+   \       0x1A   0x2000             MOVS     R0,#+0
+   \       0x1C   0x9003             STR      R0,[SP, #+12]
+     43            ADC_InitStructure.ADC_NbrOfChannel = 1;
+   \       0x1E   0x2001             MOVS     R0,#+1
+   \       0x20   0xF88D 0x0010      STRB     R0,[SP, #+16]
+     44            ADC_Init(ADC1, &ADC_InitStructure);
+   \       0x24   0x....             LDR.N    R4,??DataTable5_2
+   \       0x26   0x4669             MOV      R1,SP
+   \       0x28   0x0020             MOVS     R0,R4
+   \       0x2A   0x.... 0x....      BL       ADC_Init
+     45          
+     46            ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 1, ADC_SampleTime_239Cycles5);
+   \       0x2E   0x2307             MOVS     R3,#+7
+   \       0x30   0x2201             MOVS     R2,#+1
+   \       0x32   0x2108             MOVS     R1,#+8
+   \       0x34   0x0020             MOVS     R0,R4
+   \       0x36   0x.... 0x....      BL       ADC_RegularChannelConfig
+     47            ADC_DMACmd(ADC1, ENABLE);
+   \       0x3A   0x2101             MOVS     R1,#+1
+   \       0x3C   0x0020             MOVS     R0,R4
+   \       0x3E   0x.... 0x....      BL       ADC_DMACmd
+     48            ADC_Cmd(ADC1, ENABLE);
+   \       0x42   0x2101             MOVS     R1,#+1
+   \       0x44   0x0020             MOVS     R0,R4
+   \       0x46   0x.... 0x....      BL       ADC_Cmd
+     49            ADC_ResetCalibration(ADC1);
+   \       0x4A   0x0020             MOVS     R0,R4
+   \       0x4C   0x.... 0x....      BL       ADC_ResetCalibration
+     50          
+     51            while(ADC_GetResetCalibrationStatus(ADC1));
+   \                     ??AdcInit_0: (+1)
+   \       0x50   0x0020             MOVS     R0,R4
+   \       0x52   0x.... 0x....      BL       ADC_GetResetCalibrationStatus
+   \       0x56   0x2800             CMP      R0,#+0
+   \       0x58   0xD1FA             BNE.N    ??AdcInit_0
+     52            ADC_StartCalibration(ADC1);
+   \       0x5A   0x0020             MOVS     R0,R4
+   \       0x5C   0x.... 0x....      BL       ADC_StartCalibration
+     53            while(ADC_GetCalibrationStatus(ADC1));
+   \                     ??AdcInit_1: (+1)
+   \       0x60   0x0020             MOVS     R0,R4
+   \       0x62   0x.... 0x....      BL       ADC_GetCalibrationStatus
+   \       0x66   0x2800             CMP      R0,#+0
+   \       0x68   0xD1FA             BNE.N    ??AdcInit_1
+     54            ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+   \       0x6A   0x2101             MOVS     R1,#+1
+   \       0x6C   0x0020             MOVS     R0,R4
+   \       0x6E   0x.... 0x....      BL       ADC_SoftwareStartConvCmd
+     55          }
+   \       0x72   0xB006             ADD      SP,SP,#+24
+   \       0x74   0xBD10             POP      {R4,PC}
+     56          
+
+   \                                 In section .text, align 2, keep-with-next
+     57          void DMA_Configure(void) {
+   \                     DMA_Configure: (+1)
+   \        0x0   0xB518             PUSH     {R3,R4,LR}
+   \        0x2   0xB08B             SUB      SP,SP,#+44
+     58            DMA_InitTypeDef DMA_Instructure;
+     59          
+     60            DMA_Instructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;
+   \        0x4   0x....             LDR.N    R0,??DataTable5_3
+   \        0x6   0x9000             STR      R0,[SP, #+0]
+     61            DMA_Instructure.DMA_MemoryBaseAddr = (uint32_t)&ADC_Value; 
+   \        0x8   0x....             LDR.N    R0,??DataTable5_4
+   \        0xA   0x9001             STR      R0,[SP, #+4]
+     62            DMA_Instructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+   \        0xC   0x2000             MOVS     R0,#+0
+   \        0xE   0x9002             STR      R0,[SP, #+8]
+     63            DMA_Instructure.DMA_BufferSize = 1; 
+   \       0x10   0x2001             MOVS     R0,#+1
+   \       0x12   0x9003             STR      R0,[SP, #+12]
+     64            DMA_Instructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+   \       0x14   0x2000             MOVS     R0,#+0
+   \       0x16   0x9004             STR      R0,[SP, #+16]
+     65            DMA_Instructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+   \       0x18   0x2000             MOVS     R0,#+0
+   \       0x1A   0x9005             STR      R0,[SP, #+20]
+     66            DMA_Instructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word; 
+   \       0x1C   0xF44F 0x7000      MOV      R0,#+512
+   \       0x20   0x9006             STR      R0,[SP, #+24]
+     67            DMA_Instructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
+   \       0x22   0xF44F 0x6000      MOV      R0,#+2048
+   \       0x26   0x9007             STR      R0,[SP, #+28]
+     68            DMA_Instructure.DMA_Mode = DMA_Mode_Circular; 
+   \       0x28   0x2020             MOVS     R0,#+32
+   \       0x2A   0x9008             STR      R0,[SP, #+32]
+     69            DMA_Instructure.DMA_Priority = DMA_Priority_High;
+   \       0x2C   0xF44F 0x5000      MOV      R0,#+8192
+   \       0x30   0x9009             STR      R0,[SP, #+36]
+     70            DMA_Instructure.DMA_M2M = DMA_M2M_Disable; 
+   \       0x32   0x2000             MOVS     R0,#+0
+   \       0x34   0x900A             STR      R0,[SP, #+40]
+     71          
+     72            DMA_Init(DMA1_Channel1, &DMA_Instructure); 
+   \       0x36   0x....             LDR.N    R4,??DataTable5_5
+   \       0x38   0x4669             MOV      R1,SP
+   \       0x3A   0x0020             MOVS     R0,R4
+   \       0x3C   0x.... 0x....      BL       DMA_Init
+     73            DMA_Cmd(DMA1_Channel1, ENABLE);
+   \       0x40   0x2101             MOVS     R1,#+1
+   \       0x42   0x0020             MOVS     R0,R4
+   \       0x44   0x.... 0x....      BL       DMA_Cmd
+     74          }
+   \       0x48   0xB00C             ADD      SP,SP,#+48
+   \       0x4A   0xBD10             POP      {R4,PC}
+     75          
+
+   \                                 In section .text, align 2, keep-with-next
+     76          void punchGame_Configure(void) {
+   \                     punchGame_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     77            RccInit();
+   \        0x2   0x.... 0x....      BL       RccInit
+     78            GpioInit();
+   \        0x6   0x.... 0x....      BL       GpioInit
+     79            AdcInit();
+   \        0xA   0x.... 0x....      BL       AdcInit
+     80            DMA_Configure();
+   \        0xE   0x.... 0x....      BL       DMA_Configure
+     81          }
+   \       0x12   0xBD01             POP      {R0,PC}
+     82          
+     83          /* -----------    Game Control   ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+     84          int mapping(int punch_value, int in_min, int in_max, int out_min, int out_max){
+   \                     mapping: (+1)
+   \        0x0   0xB410             PUSH     {R4}
+   \        0x2   0x9C01             LDR      R4,[SP, #+4]
+     85              return (punch_value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+   \        0x4   0x1A40             SUBS     R0,R0,R1
+   \        0x6   0x1AE4             SUBS     R4,R4,R3
+   \        0x8   0x4360             MULS     R0,R4,R0
+   \        0xA   0x1A51             SUBS     R1,R2,R1
+   \        0xC   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \       0x10   0x181B             ADDS     R3,R3,R0
+   \       0x12   0x0018             MOVS     R0,R3
+   \       0x14   0xBC10             POP      {R4}
+   \       0x16   0x4770             BX       LR
+     86          }
+     87          
+
+   \                                 In section .text, align 2, keep-with-next
+     88          void punchGame_turnHandler(){ 
+   \                     punchGame_turnHandler: (+1)
+   \        0x0   0xB538             PUSH     {R3-R5,LR}
+     89              if(game_state == 0){  // 턴 시작
+   \        0x2   0x....             LDR.N    R0,??DataTable5_6
+   \        0x4   0x6800             LDR      R0,[R0, #+0]
+   \        0x6   0x2800             CMP      R0,#+0
+   \        0x8   0xD103             BNE.N    ??punchGame_turnHandler_0
+     90          		printf("turn begin\n");
+                 		^
+Warning[Pe223]: function "printf" declared implicitly
+   \        0xA   0x....             LDR.N    R0,??DataTable5_7
+   \        0xC   0x.... 0x....      BL       printf
+   \       0x10   0xE018             B.N      ??punchGame_turnHandler_1
+     91              }
+     92              else{  // 턴 종료
+     93                  printf("turn end / player %d = %d\n", cur_player, max_mappedValue);
+                         ^
+Warning[Pe223]: function "printf" declared implicitly
+   \                     ??punchGame_turnHandler_0: (+1)
+   \       0x12   0x....             LDR.N    R4,??DataTable5_8
+   \       0x14   0x....             LDR.N    R5,??DataTable5_9
+   \       0x16   0x682A             LDR      R2,[R5, #+0]
+   \       0x18   0x6821             LDR      R1,[R4, #+0]
+   \       0x1A   0x....             LDR.N    R0,??DataTable5_10
+   \       0x1C   0x.... 0x....      BL       printf
+     94                  values[cur_player] = max_mappedValue;
+   \       0x20   0x682A             LDR      R2,[R5, #+0]
+   \       0x22   0x....             LDR.N    R1,??DataTable5_11
+   \       0x24   0x6820             LDR      R0,[R4, #+0]
+   \       0x26   0xF841 0x2020      STR      R2,[R1, R0, LSL #+2]
+     95                  cur_player++;
+   \       0x2A   0x6820             LDR      R0,[R4, #+0]
+   \       0x2C   0x1C40             ADDS     R0,R0,#+1
+   \       0x2E   0x6020             STR      R0,[R4, #+0]
+     96          
+     97                  max_mappedValue = 0;
+   \       0x30   0x2000             MOVS     R0,#+0
+   \       0x32   0x6028             STR      R0,[R5, #+0]
+     98          
+     99                  if(cur_player == player_count)
+   \       0x34   0x6820             LDR      R0,[R4, #+0]
+   \       0x36   0x....             LDR.N    R1,??DataTable5_12
+   \       0x38   0x6809             LDR      R1,[R1, #+0]
+   \       0x3A   0x4288             CMP      R0,R1
+   \       0x3C   0xD102             BNE.N    ??punchGame_turnHandler_1
+    100          			allTurnEnd = 1;
+   \       0x3E   0x2101             MOVS     R1,#+1
+   \       0x40   0x....             LDR.N    R0,??DataTable5_13
+   \       0x42   0x6001             STR      R1,[R0, #+0]
+    101              }
+    102          }
+   \                     ??punchGame_turnHandler_1: (+1)
+   \       0x44   0xBD31             POP      {R0,R4,R5,PC}
+    103          
+
+   \                                 In section .text, align 2, keep-with-next
+    104          void punchGame(){
+   \                     punchGame: (+1)
+   \        0x0   0xB51C             PUSH     {R2-R4,LR}
+    105              int mappedValue, punch_pressure = 0;
+   \        0x2   0x2000             MOVS     R0,#+0
+    106              printf("in punchGame\n");
+                     ^
+Warning[Pe223]: function "printf" declared implicitly
+   \        0x4   0x....             LDR.N    R0,??DataTable5_14
+   \        0x6   0x.... 0x....      BL       printf
+    107              
+    108          	while(!allTurnEnd){
+   \                     ??punchGame_0: (+1)
+   \        0xA   0x....             LDR.N    R0,??DataTable5_13
+   \        0xC   0x6800             LDR      R0,[R0, #+0]
+   \        0xE   0x2800             CMP      R0,#+0
+   \       0x10   0xD011             BEQ.N    ??punchGame_1
+    109          		while(game_state == 1){  // 플레이어의 턴일 때만 로직을 실행
+    110          		// 압력 센서가 많이 민감하기 때문에, 100~600 사이의 값만 활용
+    111                  punch_pressure = ADC_Value;
+    112                  printf("%d\n",ADC_Value);
+    113                  punch_pressure = punch_pressure > 600 ? 600 : (punch_pressure < 100) ? 100 : punch_pressure;
+    114          		// 압력 센서의 값을 1~100 사이의 값으로 변환
+    115                  mappedValue = mapping(punch_pressure, 100, 600, 1, 100);
+    116          
+    117          		if(mappedValue > max_mappedValue)
+    118          			max_mappedValue = mappedValue;
+    119          		}
+    120          	}
+    121          	printf("punchGame end\n");
+   \       0x12   0x....             LDR.N    R0,??DataTable5_15
+   \       0x14   0x.... 0x....      BL       printf
+    122          }
+   \       0x18   0xBD13             POP      {R0,R1,R4,PC}
+   \                     ??punchGame_2: (+1)
+   \                     ??punchGame_3: (+1)
+   \       0x1A   0x2064             MOVS     R0,#+100
+   \       0x1C   0x9000             STR      R0,[SP, #+0]
+   \       0x1E   0x2301             MOVS     R3,#+1
+   \       0x20   0xF44F 0x7216      MOV      R2,#+600
+   \       0x24   0x2164             MOVS     R1,#+100
+   \       0x26   0x0020             MOVS     R0,R4
+   \       0x28   0x.... 0x....      BL       mapping
+   \       0x2C   0x....             LDR.N    R2,??DataTable5_9
+   \       0x2E   0x6811             LDR      R1,[R2, #+0]
+   \       0x30   0x4281             CMP      R1,R0
+   \       0x32   0xDA00             BGE.N    ??punchGame_1
+   \       0x34   0x6010             STR      R0,[R2, #+0]
+   \                     ??punchGame_1: (+1)
+   \       0x36   0x....             LDR.N    R0,??DataTable5_6
+   \       0x38   0x6800             LDR      R0,[R0, #+0]
+   \       0x3A   0x2801             CMP      R0,#+1
+   \       0x3C   0xD1E5             BNE.N    ??punchGame_0
+   \       0x3E   0x....             LDR.N    R0,??DataTable5_4
+   \       0x40   0x6804             LDR      R4,[R0, #+0]
+   \       0x42   0x6801             LDR      R1,[R0, #+0]
+   \       0x44   0x....             ADR.N    R0,??DataTable5
+   \       0x46   0x.... 0x....      BL       printf
+   \       0x4A   0xF240 0x2059      MOVW     R0,#+601
+   \       0x4E   0x4284             CMP      R4,R0
+   \       0x50   0xDB02             BLT.N    ??punchGame_4
+   \       0x52   0xF44F 0x7416      MOV      R4,#+600
+   \       0x56   0xE7E0             B.N      ??punchGame_3
+   \                     ??punchGame_4: (+1)
+   \       0x58   0x2C64             CMP      R4,#+100
+   \       0x5A   0xDADE             BGE.N    ??punchGame_2
+   \       0x5C   0x2464             MOVS     R4,#+100
+   \       0x5E   0xE7DC             B.N      ??punchGame_3
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5:
+   \        0x0   0x25 0x64          DC8      "%d\n"         
+   \              0x0A 0x00
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_1:
+   \        0x0   0x4001'0C00        DC32     0x40010c00
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_2:
+   \        0x0   0x4001'2400        DC32     0x40012400
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_3:
+   \        0x0   0x4001'244C        DC32     0x4001244c
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_4:
+   \        0x0   0x....'....        DC32     ADC_Value
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_5:
+   \        0x0   0x4002'0008        DC32     0x40020008
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_6:
+   \        0x0   0x....'....        DC32     game_state
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_7:
+   \        0x0   0x....'....        DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_8:
+   \        0x0   0x....'....        DC32     cur_player
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_9:
+   \        0x0   0x....'....        DC32     max_mappedValue
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_10:
+   \        0x0   0x....'....        DC32     ?_1
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_11:
+   \        0x0   0x....'....        DC32     values
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_12:
+   \        0x0   0x....'....        DC32     player_count
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_13:
+   \        0x0   0x....'....        DC32     allTurnEnd
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_14:
+   \        0x0   0x....'....        DC32     ?_2
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable5_15:
+   \        0x0   0x....'....        DC32     ?_4
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \        0x0   0x74 0x75          DC8 "turn begin\012"
+   \              0x72 0x6E    
+   \              0x20 0x62    
+   \              0x65 0x67    
+   \              0x69 0x6E    
+   \              0x0A 0x00
+
+   \                                 In section .rodata, align 4
+   \                     ?_1:
+   \        0x0   0x74 0x75          DC8 "turn end / player %d = %d\012"
+   \              0x72 0x6E    
+   \              0x20 0x65    
+   \              0x6E 0x64    
+   \              0x20 0x2F    
+   \              0x20 0x70    
+   \              0x6C 0x61    
+   \              0x79 0x65    
+   \              0x72 0x20    
+   \              0x25 0x64    
+   \              0x20 0x3D    
+   \              0x20 0x25    
+   \              0x64 0x0A    
+   \              0x00
+   \       0x1B                      DS8 1
+
+   \                                 In section .rodata, align 4
+   \                     ?_2:
+   \        0x0   0x69 0x6E          DC8 "in punchGame\012"
+   \              0x20 0x70    
+   \              0x75 0x6E    
+   \              0x63 0x68    
+   \              0x47 0x61    
+   \              0x6D 0x65    
+   \              0x0A 0x00
+   \        0xE                      DS8 2
+
+   \                                 In section .rodata, align 4
+   \        0x0   0x25 0x64          DC8 "%d\012"
+   \              0x0A 0x00
+
+   \                                 In section .rodata, align 4
+   \                     ?_4:
+   \        0x0   0x70 0x75          DC8 "punchGame end\012"
+   \              0x6E 0x63    
+   \              0x68 0x47    
+   \              0x61 0x6D    
+   \              0x65 0x20    
+   \              0x65 0x6E    
+   \              0x64 0x0A    
+   \              0x00
+   \        0xF                      DS8 1
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      32   AdcInit
+        32   -> ADC_Cmd
+        32   -> ADC_DMACmd
+        32   -> ADC_GetCalibrationStatus
+        32   -> ADC_GetResetCalibrationStatus
+        32   -> ADC_Init
+        32   -> ADC_RegularChannelConfig
+        32   -> ADC_ResetCalibration
+        32   -> ADC_SoftwareStartConvCmd
+        32   -> ADC_StartCalibration
+      56   DMA_Configure
+        56   -> DMA_Cmd
+        56   -> DMA_Init
+       8   GpioInit
+         8   -> GPIO_Init
+       8   RccInit
+         8   -> RCC_AHBPeriphClockCmd
+         8   -> RCC_APB2PeriphClockCmd
+       4   mapping
+      16   punchGame
+        16   -> mapping
+        16   -> printf
+       8   punchGame_Configure
+         8   -> AdcInit
+         8   -> DMA_Configure
+         8   -> GpioInit
+         8   -> RccInit
+      16   punchGame_turnHandler
+        16   -> printf
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable5
+       4  ??DataTable5_1
+       4  ??DataTable5_10
+       4  ??DataTable5_11
+       4  ??DataTable5_12
+       4  ??DataTable5_13
+       4  ??DataTable5_14
+       4  ??DataTable5_15
+       4  ??DataTable5_2
+       4  ??DataTable5_3
+       4  ??DataTable5_4
+       4  ??DataTable5_5
+       4  ??DataTable5_6
+       4  ??DataTable5_7
+       4  ??DataTable5_8
+       4  ??DataTable5_9
+      12  ?_0
+      28  ?_1
+      16  ?_2
+       4  ?_3
+      16  ?_4
+       4  ADC_Value
+     118  AdcInit
+      76  DMA_Configure
+      24  GpioInit
+      30  RccInit
+      24  mapping
+       4  max_mappedValue
+      96  punchGame
+      20  punchGame_Configure
+      70  punchGame_turnHandler
+
+ 
+   8 bytes in section .bss
+  76 bytes in section .rodata
+ 522 bytes in section .text
+ 
+ 522 bytes of CODE  memory
+  76 bytes of CONST memory
+   8 bytes of DATA  memory
+
+Errors: none
+Warnings: 3

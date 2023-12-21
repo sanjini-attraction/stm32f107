@@ -1,0 +1,409 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V9.50.1.380/W64 for ARM         21/Dec/2023  20:16:30
+# Copyright 1999-2023 IAR Systems AB.
+#
+#    Cpu mode          =  thumb
+#    Endian            =  little
+#    Source file       =  C:\stm32f107\test\stm32f107\user\src\shake_game.c
+#    Command line      =
+#        -f
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\shake_game.o.rsp
+#        (C:\stm32f107\test\stm32f107\user\src\shake_game.c -D
+#        USE_STDPERIPH_DRIVER -D STM32F10X_CL -lC
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir -o
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\CMSIS\DeviceSupport\Startup\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\inc\
+#        -I
+#        C:\stm32f107\test\stm32f107\Libraries\STM32F10x_StdPeriph_Driver_v3.5\src\
+#        -I C:\stm32f107\test\stm32f107\user\ -I
+#        C:\stm32f107\test\stm32f107\user\inc\ -I
+#        C:\stm32f107\test\stm32f107\Libraries\LCD\ -I
+#        C:\stm32f107\test\stm32f107\user\src\ -Ol -I "C:\Program Files\IAR
+#        Systems\Embedded Workbench 9.2\arm\CMSIS\Core\Include\\")
+#        --dependencies=n
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\shake_game.o.iar_deps
+#    Locale            =  C
+#    List file         =
+#        C:\stm32f107\test\stm32f107\Debug\List\src_16443330741552987741.dir\shake_game.lst
+#    Object file       =
+#        C:\stm32f107\test\stm32f107\Debug\Obj\src_16443330741552987741.dir\shake_game.o
+#    Runtime model:       
+#      __CPP_Runtime   =  1
+#      __SystemLibrary =  DLib
+#      __dlib_version  =  6
+#
+###############################################################################
+
+C:\stm32f107\test\stm32f107\user\src\shake_game.c
+      1          #include "stm32f10x_gpio.h"
+      2          #include "stm32f10x_exti.h"
+      3          #include "stm32f10x_rcc.h"
+      4          #include "misc.h"
+      5          #include "stm32f10x.h"
+      6          
+      7          #include "common.h"
+      8          #include "shake_game.h"
+      9          
+     10          /*
+     11              Touch Sensor: PB10
+     12          
+     13              count: 턴 동안 센서에 의해 측정된 횟수
+     14          */
+
+   \                                 In section .bss, align 4
+     15          int count;
+   \                     count:
+   \        0x0                      DS8 4
+     16          
+     17          /* -----------     Configure     ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+     18          void enable_ports() {
+   \                     enable_ports: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     19          	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); // KEY4(PB10)
+   \        0x2   0x2101             MOVS     R1,#+1
+   \        0x4   0x2008             MOVS     R0,#+8
+   \        0x6   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     20              RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+   \        0xA   0x2101             MOVS     R1,#+1
+   \        0xC   0x2001             MOVS     R0,#+1
+   \        0xE   0x.... 0x....      BL       RCC_APB2PeriphClockCmd
+     21          }
+   \       0x12   0xBD01             POP      {R0,PC}
+     22          
+
+   \                                 In section .text, align 2, keep-with-next
+     23          void set_input_output() {
+   \                     set_input_output: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     24              GPIO_InitTypeDef touch = {
+     25                  .GPIO_Pin = GPIO_Pin_10,
+     26                  .GPIO_Mode = GPIO_Mode_IPU
+     27              };
+   \        0x2   0x....             LDR.N    R0,??DataTable4
+   \        0x4   0x6800             LDR      R0,[R0, #+0]
+   \        0x6   0x9000             STR      R0,[SP, #+0]
+     28              GPIO_Init(GPIOB, &touch);
+   \        0x8   0x4669             MOV      R1,SP
+   \        0xA   0x....             LDR.N    R0,??DataTable4_1
+   \        0xC   0x.... 0x....      BL       GPIO_Init
+     29          }
+   \       0x10   0xBD01             POP      {R0,PC}
+
+   \                                 In section .rodata, align 4
+   \                     ?_4:
+   \        0x0   0x0400             DC16 1'024
+   \        0x2   0x00 0x48          DC8 0, 72
+     30          
+
+   \                                 In section .text, align 2, keep-with-next
+     31          void shakeGame_Configure(){
+   \                     shakeGame_Configure: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     32              enable_ports();
+   \        0x2   0x.... 0x....      BL       enable_ports
+     33              set_input_output();
+   \        0x6   0x.... 0x....      BL       set_input_output
+     34          }
+   \        0xA   0xBD01             POP      {R0,PC}
+     35          
+     36          /* -----------    Game Control   ----------- */
+
+   \                                 In section .text, align 2, keep-with-next
+     37          int is_shaked(int btn) {
+   \                     is_shaked: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     38            	return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10) == Bit_RESET;  // sensor input : PB10
+   \        0x2   0xF44F 0x6180      MOV      R1,#+1024
+   \        0x6   0x....             LDR.N    R0,??DataTable4_1
+   \        0x8   0x.... 0x....      BL       GPIO_ReadInputDataBit
+   \        0xC   0x2800             CMP      R0,#+0
+   \        0xE   0xD101             BNE.N    ??is_shaked_0
+   \       0x10   0x2001             MOVS     R0,#+1
+   \       0x12   0xE000             B.N      ??is_shaked_1
+   \                     ??is_shaked_0: (+1)
+   \       0x14   0x2000             MOVS     R0,#+0
+   \                     ??is_shaked_1: (+1)
+   \       0x16   0xB2C0             UXTB     R0,R0
+   \       0x18   0xBD02             POP      {R1,PC}
+     39          }
+     40          
+
+   \                                 In section .text, align 2, keep-with-next
+     41          void shakeGame_turnHandler(){
+   \                     shakeGame_turnHandler: (+1)
+   \        0x0   0xB538             PUSH     {R3-R5,LR}
+     42              if(game_state == 0){  // 턴 시작
+   \        0x2   0x....             LDR.N    R0,??DataTable4_2
+   \        0x4   0x6800             LDR      R0,[R0, #+0]
+   \        0x6   0x2800             CMP      R0,#+0
+   \        0x8   0xD106             BNE.N    ??shakeGame_turnHandler_0
+     43                  printf("turn begin\n");
+                         ^
+Warning[Pe223]: function "printf" declared implicitly
+   \        0xA   0x....             LDR.N    R0,??DataTable4_3
+   \        0xC   0x.... 0x....      BL       printf
+     44          		count = 0;
+   \       0x10   0x2100             MOVS     R1,#+0
+   \       0x12   0x....             LDR.N    R0,??DataTable4_4
+   \       0x14   0x6001             STR      R1,[R0, #+0]
+   \       0x16   0xE018             B.N      ??shakeGame_turnHandler_1
+     45              }
+     46              else{  // 턴 종료
+     47                  printf("turn end / %d player value = %d\n", cur_player, count);
+                         ^
+Warning[Pe223]: function "printf" declared implicitly
+   \                     ??shakeGame_turnHandler_0: (+1)
+   \       0x18   0x....             LDR.N    R4,??DataTable4_5
+   \       0x1A   0x....             LDR.N    R5,??DataTable4_4
+   \       0x1C   0x682A             LDR      R2,[R5, #+0]
+   \       0x1E   0x6821             LDR      R1,[R4, #+0]
+   \       0x20   0x....             LDR.N    R0,??DataTable4_6
+   \       0x22   0x.... 0x....      BL       printf
+     48                  values[cur_player] = count;
+   \       0x26   0x682A             LDR      R2,[R5, #+0]
+   \       0x28   0x....             LDR.N    R1,??DataTable4_7
+   \       0x2A   0x6820             LDR      R0,[R4, #+0]
+   \       0x2C   0xF841 0x2020      STR      R2,[R1, R0, LSL #+2]
+     49                  cur_player++;
+   \       0x30   0x6820             LDR      R0,[R4, #+0]
+   \       0x32   0x1C40             ADDS     R0,R0,#+1
+   \       0x34   0x6020             STR      R0,[R4, #+0]
+     50                  
+     51                  // 현재 플레이어의 값을 초기화
+     52                  count = 0;
+   \       0x36   0x2000             MOVS     R0,#+0
+   \       0x38   0x6028             STR      R0,[R5, #+0]
+     53          
+     54                  if(cur_player == player_count)
+   \       0x3A   0x6820             LDR      R0,[R4, #+0]
+   \       0x3C   0x....             LDR.N    R1,??DataTable4_8
+   \       0x3E   0x6809             LDR      R1,[R1, #+0]
+   \       0x40   0x4288             CMP      R0,R1
+   \       0x42   0xD102             BNE.N    ??shakeGame_turnHandler_1
+     55                      allTurnEnd = 1;
+   \       0x44   0x2101             MOVS     R1,#+1
+   \       0x46   0x....             LDR.N    R0,??DataTable4_9
+   \       0x48   0x6001             STR      R1,[R0, #+0]
+     56              }
+     57          }
+   \                     ??shakeGame_turnHandler_1: (+1)
+   \       0x4A   0xBD31             POP      {R0,R4,R5,PC}
+     58          
+
+   \                                 In section .text, align 2, keep-with-next
+     59          void shakeGame(){      
+   \                     shakeGame: (+1)
+   \        0x0   0xB580             PUSH     {R7,LR}
+     60              printf("in shakeGame\n");
+                     ^
+Warning[Pe223]: function "printf" declared implicitly
+   \        0x2   0x....             LDR.N    R0,??DataTable4_10
+   \        0x4   0x.... 0x....      BL       printf
+   \        0x8   0xE012             B.N      ??shakeGame_0
+     61              while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
+     62          		if(game_state == 1){
+   \                     ??shakeGame_1: (+1)
+   \        0xA   0x....             LDR.N    R0,??DataTable4_2
+   \        0xC   0x6800             LDR      R0,[R0, #+0]
+   \        0xE   0x2801             CMP      R0,#+1
+   \       0x10   0xD10E             BNE.N    ??shakeGame_0
+     63          			if(is_shaked(2)) count++;
+   \       0x12   0x2002             MOVS     R0,#+2
+   \       0x14   0x.... 0x....      BL       is_shaked
+   \       0x18   0x2800             CMP      R0,#+0
+   \       0x1A   0xD003             BEQ.N    ??shakeGame_2
+   \       0x1C   0x....             LDR.N    R1,??DataTable4_4
+   \       0x1E   0x6808             LDR      R0,[R1, #+0]
+   \       0x20   0x1C40             ADDS     R0,R0,#+1
+   \       0x22   0x6008             STR      R0,[R1, #+0]
+     64          			if(count > 100) count = 0;
+   \                     ??shakeGame_2: (+1)
+   \       0x24   0x....             LDR.N    R0,??DataTable4_4
+   \       0x26   0x6801             LDR      R1,[R0, #+0]
+   \       0x28   0x2965             CMP      R1,#+101
+   \       0x2A   0xDB01             BLT.N    ??shakeGame_0
+   \       0x2C   0x2100             MOVS     R1,#+0
+   \       0x2E   0x6001             STR      R1,[R0, #+0]
+     65          		}
+     66          	}
+   \                     ??shakeGame_0: (+1)
+   \       0x30   0x....             LDR.N    R0,??DataTable4_9
+   \       0x32   0x6800             LDR      R0,[R0, #+0]
+   \       0x34   0x2800             CMP      R0,#+0
+   \       0x36   0xD0E8             BEQ.N    ??shakeGame_1
+     67              printf("shakeGame end\n");
+   \       0x38   0x....             LDR.N    R0,??DataTable4_11
+   \       0x3A   0x.... 0x....      BL       printf
+     68          }
+   \       0x3E   0xBD01             POP      {R0,PC}
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4:
+   \        0x0   0x....'....        DC32     ?_4
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_1:
+   \        0x0   0x4001'0C00        DC32     0x40010c00
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_2:
+   \        0x0   0x....'....        DC32     game_state
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_3:
+   \        0x0   0x....'....        DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_4:
+   \        0x0   0x....'....        DC32     count
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_5:
+   \        0x0   0x....'....        DC32     cur_player
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_6:
+   \        0x0   0x....'....        DC32     ?_1
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_7:
+   \        0x0   0x....'....        DC32     values
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_8:
+   \        0x0   0x....'....        DC32     player_count
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_9:
+   \        0x0   0x....'....        DC32     allTurnEnd
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_10:
+   \        0x0   0x....'....        DC32     ?_2
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_11:
+   \        0x0   0x....'....        DC32     ?_3
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \        0x0   0x74 0x75          DC8 "turn begin\012"
+   \              0x72 0x6E    
+   \              0x20 0x62    
+   \              0x65 0x67    
+   \              0x69 0x6E    
+   \              0x0A 0x00
+
+   \                                 In section .rodata, align 4
+   \                     ?_1:
+   \        0x0   0x74 0x75          DC8 "turn end / %d player value = %d\012"
+   \              0x72 0x6E    
+   \              0x20 0x65    
+   \              0x6E 0x64    
+   \              0x20 0x2F    
+   \              0x20 0x25    
+   \              0x64 0x20    
+   \              0x70 0x6C    
+   \              0x61 0x79    
+   \              0x65 0x72    
+   \              0x20 0x76    
+   \              0x61 0x6C    
+   \              0x75 0x65    
+   \              0x20 0x3D    
+   \              0x20 0x25    
+   \              0x64 0x0A    
+   \              0x00
+   \       0x21                      DS8 3
+
+   \                                 In section .rodata, align 4
+   \                     ?_2:
+   \        0x0   0x69 0x6E          DC8 "in shakeGame\012"
+   \              0x20 0x73    
+   \              0x68 0x61    
+   \              0x6B 0x65    
+   \              0x47 0x61    
+   \              0x6D 0x65    
+   \              0x0A 0x00
+   \        0xE                      DS8 2
+
+   \                                 In section .rodata, align 4
+   \                     ?_3:
+   \        0x0   0x73 0x68          DC8 "shakeGame end\012"
+   \              0x61 0x6B    
+   \              0x65 0x47    
+   \              0x61 0x6D    
+   \              0x65 0x20    
+   \              0x65 0x6E    
+   \              0x64 0x0A    
+   \              0x00
+   \        0xF                      DS8 1
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   enable_ports
+         8   -> RCC_APB2PeriphClockCmd
+       8   is_shaked
+         8   -> GPIO_ReadInputDataBit
+       8   set_input_output
+         8   -> GPIO_Init
+       8   shakeGame
+         8   -> is_shaked
+         8   -> printf
+       8   shakeGame_Configure
+         8   -> enable_ports
+         8   -> set_input_output
+      16   shakeGame_turnHandler
+        16   -> printf
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_10
+       4  ??DataTable4_11
+       4  ??DataTable4_2
+       4  ??DataTable4_3
+       4  ??DataTable4_4
+       4  ??DataTable4_5
+       4  ??DataTable4_6
+       4  ??DataTable4_7
+       4  ??DataTable4_8
+       4  ??DataTable4_9
+      12  ?_0
+      36  ?_1
+      16  ?_2
+      16  ?_3
+       4  ?_4
+       4  count
+      20  enable_ports
+      26  is_shaked
+      18  set_input_output
+      64  shakeGame
+      12  shakeGame_Configure
+      76  shakeGame_turnHandler
+
+ 
+   4 bytes in section .bss
+  84 bytes in section .rodata
+ 264 bytes in section .text
+ 
+ 264 bytes of CODE  memory
+  84 bytes of CONST memory
+   4 bytes of DATA  memory
+
+Errors: none
+Warnings: 3
