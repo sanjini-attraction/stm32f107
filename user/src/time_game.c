@@ -7,6 +7,10 @@
 #include "time_game.h"
 #include "common.h"
 
+/*
+    Touch Sensor: PA1
+    Timer2: 10Hz
+*/
 int time_count, timer_running;
 
 /* -----------     Configure     ----------- */
@@ -90,9 +94,10 @@ void timeGame_TimerHandler(){
 }
 
 void timeGame_TouchHandler(){
-    printf("4 clicked\n");
     if (EXTI_GetITStatus(EXTI_Line1) != RESET) {
         if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) == Bit_RESET) {
+            // 계속 timer interrupt가 발생할 필요 X
+            // Touch Sensor가 눌렸을 때, timer 상태에 따라 timer를 시작하거나 멈춤
             if(timer_running == 0)
                 TIM_Cmd(TIM2, ENABLE);
             else TIM_Cmd(TIM2, DISABLE);
@@ -112,9 +117,9 @@ void timeGame_turnHandler(){
         TIM_Cmd(TIM2, DISABLE);
     }
     else{ // 턴 종료
+        printf("turn end / %d player time = %d\n", cur_player, time_count);
         values[cur_player] = time_count; // 기록 저장
         cur_player++;
-        printf("%d player time = %d\n", cur_player, time_count);
 
         if(cur_player == player_count)
             allTurnEnd = 1;        

@@ -8,7 +8,9 @@
 #include "shake_game.h"
 #include "common.h"
 
-// int cur_game = 0;
+/*
+    C4 button(key1)을 turnButton으로 사용
+*/
 
 void turnButton_gpio_Configure(){
      GPIO_InitTypeDef button = {
@@ -40,7 +42,7 @@ void turnButton_nvic_Configure(){
 }
 
 void turnButton_Button_Configure(){
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE); // KEY1(PC4)
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
     turnButton_gpio_Configure();
@@ -61,6 +63,7 @@ void turnButton_Handler(){
             
             if(game_state) printf("turn end\n");
             else printf("turn begin\n");
+            
             // 게임 상태 변경
             game_state = !game_state;
         }
