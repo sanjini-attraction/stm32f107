@@ -45,7 +45,7 @@ void touch_nvic_Configure(){
 void timer_Configure(){
     TIM_TimeBaseInitTypeDef timer2 = {
         // 1Hz = 72MHz / TIM_Prescaler / TIM_Period = 72MHz / 10k / 7200
-        .TIM_Prescaler = (uint16_t) (SystemCoreClock / 10000)-1,
+        .TIM_Prescaler = (uint16_t) (SystemCoreClock / 100000)-1,
         .TIM_CounterMode = TIM_CounterMode_Up,
         .TIM_Period = 10000-1,
         .TIM_ClockDivision = 0,
@@ -55,6 +55,7 @@ void timer_Configure(){
 }
 void timer_interrupt_Configure(){
     TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+    TIM_Cmd(TIM2, DISABLE);
 }
 void timer_nvic_Configure(){
     NVIC_InitTypeDef timer2 = {
@@ -96,13 +97,15 @@ void timeGame_TimerHandler(){
 void timeGame_TouchHandler(){
     if (EXTI_GetITStatus(EXTI_Line1) != RESET) {
         if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) == Bit_RESET) {
-            // 계속 timer interrupt가 발생할 필요 X
-            // Touch Sensor가 눌렸을 때, timer 상태에 따라 timer를 시작하거나 멈춤
-            if(timer_running == 0)
-                TIM_Cmd(TIM2, ENABLE);
-            else TIM_Cmd(TIM2, DISABLE);
+            if(cur_game == 2){
+                // 계속 timer interrupt가 발생할 필요 X
+                // Touch Sensor가 눌렸을 때, timer 상태에 따라 timer를 시작하거나 멈춤
+                if(timer_running == 0)
+                    TIM_Cmd(TIM2, ENABLE);
+                else TIM_Cmd(TIM2, DISABLE);
 
-            timer_running = !timer_running;
+                timer_running = !timer_running;
+            }
         }
         EXTI_ClearITPendingBit(EXTI_Line1);
     }

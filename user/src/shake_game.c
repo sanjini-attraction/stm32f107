@@ -34,7 +34,7 @@ void shakeGame_Configure(){
 }
 
 /* -----------    Game Control   ----------- */
-int is_shaked(int btn) {
+int is_shaked() {
   	return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10) == Bit_RESET;  // sensor input : PB10
 }
 
@@ -60,7 +60,10 @@ void shakeGame(){
     printf("in shakeGame\n");
     while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
 		if(game_state == 1){
-			if(is_shaked(2)) count++;
+			if(is_shaked()){
+                printf("is shaked\n");
+                count++;
+            }
 			if(count > 100) count = 0;
 		}
 	}

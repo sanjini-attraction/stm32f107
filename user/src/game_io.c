@@ -112,6 +112,7 @@ void io_NVIC_Configure(void) {
 void sendMessage() {
     // 게임 종료 후 결과를 핸드폰으로 전송함
     for(int i=0; i<player_count; i++){
+        printf("value: %d", values[i]);
         USART_SendData(USART2, values[i]);
         for(int i=0; i<2000000; i++); // delay
         // while((USART2->SR & USART_SR_TC) == 0);
@@ -124,6 +125,7 @@ void sendMessage() {
 void io_receivedDataParsing(){
     // numbers = {index(게임 인덱스 - 0~2), people_count(인원 수), goal(목표 점수)}
     int numbers[100] = {0, };
+    printf("io_received_parsing");
     int io_count = 0;
     int currentNumber = 0;
 
@@ -143,7 +145,6 @@ void io_receivedDataParsing(){
     cur_game = numbers[0];
     player_count = numbers[1];
     is_data_received = 2;
-
     for(int i=0; i<100; i++) io_char[i] = 0;
 }
 
