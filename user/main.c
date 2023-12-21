@@ -61,6 +61,7 @@ void Init(){
 
   	// common configure(게임 플레이와 무관한 설정)
   	io_Configure();
+	turnLed_Configure();
 	turnButton_Button_Configure();
   
 	// game configure(해당하는 게임별 사용하는 GPIO, EXTI, NVIC, DMA, Timer등을 설정)

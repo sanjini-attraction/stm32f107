@@ -103,7 +103,7 @@ void punchGame_turnHandler(){
 
 void punchGame(){
     int mappedValue, punch_pressure = 0;
-    printf("in punch game\n");
+    printf("in punchGame\n");
     
 	while(!allTurnEnd){
 		while(game_state == 1){  // 플레이어의 턴일 때만 로직을 실행
@@ -116,4 +116,5 @@ void punchGame(){
 			max_mappedValue = mappedValue;
 		}
 	}
+	printf("punchGame end\n")
 }
