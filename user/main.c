@@ -12,15 +12,13 @@
 #include "common.h"
 #include "game_io.h"
 
-int values[PLAYER_MAX] = {0, }; // 각 플레이어의 데이터 저장
-
+int values[PLAYER_MAX] = {0, };
 int is_data_received = 0;
 int cur_game = 0;
 int player_count = 3;;
 int cur_player = 0;
 int game_state = 0;
 int allTurnEnd = 0;
-
 
 /*
   main: flaot value[PLAYER_MAX] = {};
@@ -34,17 +32,9 @@ int allTurnEnd = 0;
     main: 게임 선택, 인원 설정
     game_?: 게임 플레이()
     game_?: main으로 리턴
-    main: value데이터 app으로 전송
+    main: 결과 데이터(value) app으로 전송
   }    
 */
-/*
-  1. 펀치: polling으로 측정해서 max
-  2. 굴리기: 턴 종료시 거리 측정
-  3. 시간 맞추기: 터치로 알아서
-  4. 앱: 알아서
-  5. main
-*/
-
 
 // turnEnd button interrupt handler
 void EXTI4_IRQHandler(){ turnButton_Handler(); }
@@ -78,20 +68,25 @@ int main(){
 		cur_game  = 0;
 		is_data_received = 0;
 		player_count = 0;
-    
-		while(is_data_received != 2);  // 게임 데이터를 받아올 때까지 대기
+
+        // 게임 데이터를 모두 받아올 때까지 대기
+		while(is_data_received != 2);
         printf("data received %d %d \n", player_count, cur_game);
         
 		// 게임 데이터 초기화
 		allTurnEnd = 0;
 		cur_player = 0;
 		game_state = 0;
+
+        // 게임 진행
 		switch(cur_game){
 			case 0: shakeGame(); break;
 			case 1: punchGame(); break;
 			case 2: timeGame();	 break;
 			default: 			 break;
 		}
-		sendMessage();  // 게임 결과를 앱으로 전송
+
+        // 게임 결과를 앱으로 전송
+		sendMessage();
 	}
 }

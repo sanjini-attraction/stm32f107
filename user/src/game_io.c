@@ -9,7 +9,10 @@
 #include "common.h"
 #include "game_io.h"
 
-uint16_t io_char[100] = {0, }; // 받아온 값을 저장
+// 핸드폰으로부터 받아온 값 1차 저장 (char 저장)
+uint16_t io_char[100] = {0, };
+
+// 이때까지 받아온 값이 몇 개인지
 int io_index = 0;
 
 /* -----------  Configure ---------- */
@@ -93,6 +96,7 @@ void io_NVIC_Configure(void) {
 
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 
+    // USART1
     NVIC_EnableIRQ(USART1_IRQn);
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x1;
@@ -111,22 +115,36 @@ void io_NVIC_Configure(void) {
 
 void sendMessage() {
     // 게임 종료 후 결과를 핸드폰으로 전송함
+    // values: 게임 결과 값
     for(int i=0; i<player_count; i++){
         USART_SendData(USART2, values[i]);
-        for(int i=0; i<2000000; i++); // delay
-        // while((USART2->SR & USART_SR_TC) == 0);
+
+        // delay
+        for(int i=0; i<2000000; i++);
     }
 
+    // finish 메시지 (끝내는 flag값)
     USART_SendData(USART2, 1000);
-    for(int i=0; i<2000000; i++); // delay
+
+    // delay
+    for(int i=0; i<2000000; i++);
 }
 
+// char type인 array를 int type으로 변경
+// 데이터 나누는 기준은 공백
+// ex) {'1', ' ', '2', '3'} -> {1, 23}
 void io_receivedDataParsing(){
-    // numbers = {index(게임 인덱스 - 0~2), people_count(인원 수), goal(목표 점수)}
+    // numbers = {index(게임 인덱스 - 0~2), people_count(인원 수)}
     int numbers[100] = {0, };
+
+    // 데이터 파싱을 위한 임시 변수
+    // 현재 몇 개를 파싱했는지
     int io_count = 0;
+
+    // 현재 저장해야 할 값
     int currentNumber = 0;
 
+    // 데이터 파싱
     for (int i = 0; i < 100; i++) {
         if (io_char[i] >= '0' && io_char[i] <= '9') {
             currentNumber = currentNumber * 10 + (io_char[i] - '0');
@@ -136,26 +154,33 @@ void io_receivedDataParsing(){
             io_count++;
             currentNumber = 0;
 
+            // 파싱 완료
             if (io_count == 3) break;
         }
     }
 
+    // 현재 게임의 index와 플레이어 인원수 저장
     cur_game = numbers[0];
     player_count = numbers[1];
+
+    // 데이터 수신 state 변경
     is_data_received = 2;
 
+    // 받아온 값을 저장했던 io_char 초기화
     for(int i=0; i<100; i++) io_char[i] = 0;
 }
 
+// 블루투스로부터 데이터 받고 컴퓨터한테 보냄
 void io_USART2_IRQHandler() {
-    // 블루투스로부터 데이터 받고 컴퓨터한테 보냄
     uint16_t word;
     if(USART_GetITStatus(USART2,USART_IT_RXNE)!=RESET){
         word = USART_ReceiveData(USART2);
 
+        // 받아온 데이터 저장
         io_char[io_index] = word;
         io_index++;
 
+        // FINISH_MESSAGE가 'A'이면 데이터 수신 상태 변경
         if (word == 'A') {
             is_data_received = 1;
         }
@@ -163,14 +188,17 @@ void io_USART2_IRQHandler() {
         USART_SendData(USART1, word);
         USART_ClearITPendingBit(USART2,USART_IT_RXNE);
     }
+
     // io_char은 현재 {'0', ' ', '1', '2' } 이렇게 저장되어 있기 때문에
     // 이를 int형으로 parsing하는 작업이 필요
     printf("mymessage: %c \n", word);
+
     if (is_data_received == 1) {
         io_receivedDataParsing();
     }
 }
 
+// 블루투스 연결 관련 configuration 코드
 void io_Configure() {
     io_rcc_Configure();
     io_gpio_Configure();

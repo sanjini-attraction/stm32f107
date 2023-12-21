@@ -3,7 +3,7 @@
 /*
     Bluethooh로 보낼 데이터
 
-    values : 각 플레이어의 데이터 저장
+    values : 각 플레이어의 데이터(점수) 저장
 */
 extern int values[PLAYER_MAX];
 
@@ -17,14 +17,13 @@ extern int values[PLAYER_MAX];
         1 : punch game
         2 : time game
     is_data_received : 블루투스 연결시 값을 받아왔는지에 대한 상태 관리
-        0 : 아직 다 안 받아옴
-        1 : 데이터 받아옴
-        2 : 파싱까지 완료
+        0 - 데이터 수신 미완료
+        1 - 데이터 수신 완료  (raw 데이터)
+        2 - 데이터 파싱 완료  (게임 시작 준비 단계)
 */
 extern int player_count;
 extern int cur_game;
 extern int is_data_received;
-
 
 /*
     게임 진행에 필요한 변수
