@@ -167,6 +167,7 @@ void io_receivedDataParsing(){
 
     // 데이터 수신 state 변경
     is_data_received = 2;
+
     // 받아온 값을 저장했던 io_char 초기화
     for(int i=0; i<100; i++) io_char[i] = 0;
 }

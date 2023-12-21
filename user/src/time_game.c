@@ -113,22 +113,30 @@ void timeGame_TouchHandler(){
 
 /* -----------    Game Control   ----------- */
 void timeGame_turnHandler(){
-    if(game_state == 0){  // 턴 시작
+    if(game_state == 0){
+        // 턴 시작
         printf("turn begin\n");
         time_count = 0;
         timer_running = 0;
         TIM_Cmd(TIM2, DISABLE);
     }
-    else{ // 턴 종료
+    else{
+        // 턴 종료
         printf("turn end / %d player time = %d\n", cur_player, time_count);
-        values[cur_player] = time_count; // 기록 저장
+
+        // 결과값 저장
+        values[cur_player] = time_count;
+
+        // 다음 player로 넘어감
         cur_player++;
 
+        // 모든 player가 게임을 끝낸 경우 state(allTurnEnd)를 바꿔줌
         if(cur_player == player_count)
             allTurnEnd = 1;        
     }
 }
 void timeGame(){
+    // 모든 턴이 끝날때까지 반복
     printf("in timeGame\n");
     while(!allTurnEnd);
     printf("timeGame ended\n");

@@ -86,16 +86,23 @@ int mapping(int punch_value, int in_min, int in_max, int out_min, int out_max){
 }
 
 void punchGame_turnHandler(){ 
-    if(game_state == 0){  // 턴 시작
+    if(game_state == 0){
+        // 턴 시작
 		printf("turn begin\n");
     }
-    else{  // 턴 종료
+    else{
+        // 턴 종료
         printf("turn end / player %d = %d\n", cur_player, max_mappedValue);
+
+        // 결과값 저장
         values[cur_player] = max_mappedValue;
+
+        // 다음 player로 넘어감
         cur_player++;
 
         max_mappedValue = 0;
 
+        // 모든 player가 게임을 끝낸 경우 state(allTurnEnd)를 바꿔줌
         if(cur_player == player_count)
 			allTurnEnd = 1;
     }
@@ -106,16 +113,20 @@ void punchGame(){
     printf("in punchGame\n");
     
 	while(!allTurnEnd){
-		while(game_state == 1){  // 플레이어의 턴일 때만 로직을 실행
-		// 압력 센서가 많이 민감하기 때문에, 100~600 사이의 값만 활용
-        punch_pressure = ADC_Value;
-        printf("%d\n",ADC_Value);
-        punch_pressure = punch_pressure > 600 ? 600 : (punch_pressure < 100) ? 100 : punch_pressure;
-		// 압력 센서의 값을 1~100 사이의 값으로 변환
-        mappedValue = mapping(punch_pressure, 100, 600, 1, 100);
+        // 플레이어의 턴일 때만 로직을 실행
+		while(game_state == 1){
 
-		if(mappedValue > max_mappedValue)
-			max_mappedValue = mappedValue;
+            punch_pressure = ADC_Value;
+            printf("%d\n",ADC_Value);
+
+            // 압력 센서가 많이 민감하기 때문에, 100~600 사이의 값만 활용
+            punch_pressure = punch_pressure > 600 ? 600 : (punch_pressure < 100) ? 100 : punch_pressure;
+
+            // 압력 센서의 값을 1~100 사이의 값으로 변환
+            mappedValue = mapping(punch_pressure, 100, 600, 1, 100);
+
+            if(mappedValue > max_mappedValue)
+                max_mappedValue = mappedValue;
 		}
 	}
 	printf("punchGame end\n");

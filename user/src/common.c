@@ -79,6 +79,8 @@ void turnButton_Handler(){
 
             if(led_state) GPIO_ResetBits(GPIOD, GPIO_Pin_2);
             else GPIO_SetBits(GPIOD, GPIO_Pin_2);
+
+            // led 상태 변경
             led_state = !led_state;
         }
         EXTI_ClearITPendingBit(EXTI_Line4);

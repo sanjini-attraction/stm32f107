@@ -39,11 +39,13 @@ int is_shaked() {
 }
 
 void shakeGame_turnHandler(){
-    if(game_state == 0){  // 턴 시작
+    if(game_state == 0){
+        // 턴 시작
         printf("turn begin\n");
 		count = 0;
     }
-    else{  // 턴 종료
+    else{
+        // 턴 종료
         printf("turn end / %d player value = %d\n", cur_player, count);
         values[cur_player] = count;
         cur_player++;
@@ -58,7 +60,8 @@ void shakeGame_turnHandler(){
 
 void shakeGame(){      
     printf("in shakeGame\n");
-    while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
+    // 플레이어의 턴일 때만 로직을 실행
+    while(!allTurnEnd){
 		if(game_state == 1){
 			if(is_shaked()){
                 printf("is shaked\n");
