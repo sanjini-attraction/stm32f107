@@ -143,7 +143,7 @@ void io_receivedDataParsing(){
     player_count = numbers[1];
     is_data_received = 2;
 
-    //printf("in io: curgame - %d player_count %d\n", cur_game, player_count);
+    for(int i=0; i<100; i++) io_char[i] = 0;
 }
 
 void io_USART2_IRQHandler() {

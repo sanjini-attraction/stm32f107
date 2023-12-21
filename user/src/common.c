@@ -61,9 +61,6 @@ void turnButton_Handler(){
                 default: break;
             }
             
-            if(game_state) printf("turn end\n");
-            else printf("turn begin\n");
-            
             // 게임 상태 변경
             game_state = !game_state;
         }

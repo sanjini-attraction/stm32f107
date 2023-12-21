@@ -1,9 +1,17 @@
+#include "stm32f10x_gpio.h"
+#include "stm32f10x_exti.h"
+#include "stm32f10x_rcc.h"
+#include "misc.h"
 #include "stm32f10x.h"
 
 #include "common.h"
 #include "shake_game.h"
 
-#define MEM_OFFSET(x, y) (volatile unsigned int *) (x + y);
+/*
+    Touch Sensor: PB10
+
+    count: 턴 동안 센서에 의해 측정된 횟수
+*/
 int count;
 
 /* -----------     Configure     ----------- */
@@ -31,28 +39,30 @@ int is_shaked(int btn) {
 }
 
 void shakeGame_turnHandler(){
-    if(game_state == 0){  // 이제 턴 시작 (ready)
+    if(game_state == 0){  // 턴 시작
+        printf("turn begin\n");
 		count = 0;
     }
-    else{  // 해당 플레이어의 턴 종료
-        // 해당 플레이어의 값을 저장
+    else{  // 턴 종료
+        printf("turn end / %d player value = %d\n", cur_player, count);
         values[cur_player] = count;
-        printf("values[%d] = %d\n", cur_player, count);
+        cur_player++;
+        
         // 현재 플레이어의 값을 초기화
         count = 0;
-        // 다음 플레이어로 넘어감
-        cur_player++;
-        // 모든 플레이어가 턴을 종료했는지 확인
+
         if(cur_player == player_count)
-          allTurnEnd = 1;
+            allTurnEnd = 1;
     }
 }
 
 void shakeGame(){      
+    printf("in shakeGame\n");
     while(!allTurnEnd){   // 플레이어의 턴일 때만 로직을 실행
 		if(game_state == 1){
-			if(is_shaked(2)) count++;   
+			if(is_shaked(2)) count++;
 			if(count > 100) count = 0;
 		}
 	}
+    printf("shakeGame end\n");
 }
