@@ -12,16 +12,9 @@
 #include "common.h"
 #include "game_io.h"
 
-int values[PLAYER_MAX] = {0, };
-int is_data_received = 0;
-int cur_game = 0;
-int player_count = 3;;
-int cur_player = 0;
-int game_state = 0;
-int allTurnEnd = 0;
-
 /*
-  main: flaot value[PLAYER_MAX] = {};
+  [메인 코드]
+  main: int value[PLAYER_MAX] = {};
   main: 휴대폰이랑 연결
   while{
     app: 인원선택
@@ -33,8 +26,19 @@ int allTurnEnd = 0;
     game_?: 게임 플레이()
     game_?: main으로 리턴
     main: 결과 데이터(value) app으로 전송
-  }    
+  }
 */
+
+// 아래 변수에 대한 설명은 common.h에 작성하였습니다.
+// 게임에 대한 상세 설명 또한 punch_game.h, shake_game.h, time_game.h에 작성하였습니다.
+
+int values[PLAYER_MAX] = {0, };
+int is_data_received = 0;
+int cur_game = 0;
+int player_count = 3;;
+int cur_player = 0;
+int game_state = 0;
+int allTurnEnd = 0;
 
 // turnEnd button interrupt handler
 void EXTI4_IRQHandler(){ turnButton_Handler(); }

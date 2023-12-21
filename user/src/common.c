@@ -9,7 +9,7 @@
 #include "common.h"
 
 /*
-    C4 button(key1)을 turnButton으로 사용
+    C4 button(key1, 터치센서)을 turnButton으로 사용
     D2 led를 turnLed로 사용
 */
 int led_state;
